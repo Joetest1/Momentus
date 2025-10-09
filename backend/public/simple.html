@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Momentus - Mindful Nature Meditation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f8f0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        button {
+            background: #4a7c59;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #3d6249;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌿 Momentus</h1>
+        <p>Mindful Nature Meditation Generator</p>
+        
+        <div class="card">
+            <h2>Create Your Meditation</h2>
+            
+            <label>Latitude:</label>
+            <input type="number" id="latitude" placeholder="37.7749" step="any">
+            
+            <label>Longitude:</label>
+            <input type="number" id="longitude" placeholder="-122.4194" step="any">
+            
+            <button onclick="getLocation()">Use My Location</button>
+            
+            <label>Duration:</label>
+            <select id="duration">
+                <option value="300">5 minutes</option>
+                <option value="600">10 minutes</option>
+            </select>
+            
+            <label>Mood:</label>
+            <select id="mood">
+                <option value="calm">Calm</option>
+                <option value="peaceful">Peaceful</option>
+            </select>
+            
+            <button onclick="generateMeditation()">Generate Meditation</button>
+        </div>
+        
+        <div id="result" class="card" style="display: none;">
+            <h3>Your Meditation</h3>
+            <div id="meditationContent"></div>
+        </div>
+    </div>
+
+    <script>
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        document.getElementById('latitude').value = position.coords.latitude.toFixed(6);
+                        document.getElementById('longitude').value = position.coords.longitude.toFixed(6);
+                    },
+                    (error) => {
+                        alert('Unable to get your location');
+                    }
+                );
+            }
+        }
+
+        async function generateMeditation() {
+            const latitude = parseFloat(document.getElementById('latitude').value);
+            const longitude = parseFloat(document.getElementById('longitude').value);
+            const duration = parseInt(document.getElementById('duration').value);
+            const mood = document.getElementById('mood').value;
+
+            if (isNaN(latitude) || isNaN(longitude)) {
+                alert('Please enter valid coordinates');
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/sessions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        latitude,
+                        longitude,
+                        preferences: { duration, mood }
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const result = document.getElementById('result');
+                    const content = document.getElementById('meditationContent');
+                    
+                    content.innerHTML = `
+                        <p><strong>Species:</strong> ${data.session.species.name}</p>
+                        <p><strong>Weather:</strong> ${data.session.weather.description}</p>
+                        <p><strong>Lunar Phase:</strong> ${data.session.lunar.phase}</p>
+                        <div style="margin-top: 20px; line-height: 1.6;">
+                            ${data.session.content.text.replace(/\n/g, '<br>')}
+                        </div>
+                    `;
+                    
+                    result.style.display = 'block';
+                } else {
+                    alert('Failed to generate meditation: ' + data.message);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            }
+        }
+
+        // Auto-detect location on load
+        window.addEventListener('load', getLocation);
+    </script>
+</body>
+</html>

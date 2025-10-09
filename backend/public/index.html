@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Momentus - Mindful Nature Meditation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #2d5a27 0%, #4a7c59 50%, #668b5c 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            padding: 40px 0;
+        }
+
+        .header h1 {
+            font-size: 3em;
+            font-weight: 300;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2d5a27;
+        }
+
+        input, select, button {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #4a7c59;
+            box-shadow: 0 0 0 3px rgba(74, 124, 89, 0.1);
+        }
+
+        .location-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto;
+            gap: 15px;
+            align-items: end;
+        }
+
+        .location-btn {
+            background: #4a7c59;
+            color: white;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            padding: 15px 20px;
+        }
+
+        .location-btn:hover {
+            background: #3d6249;
+            transform: translateY(-2px);
+        }
+
+        .preferences-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #4a7c59 0%, #668b5c 100%);
+            color: white;
+            border: none;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .generate-btn:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(74, 124, 89, 0.3);
+        }
+
+        .generate-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #4a7c59;
+        }
+
+        .loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e0e0e0;
+            border-left: 4px solid #4a7c59;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .meditation-display {
+            display: none;
+        }
+
+        .meditation-display.visible {
+            display: block;
+        }
+
+        .meditation-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .meditation-header h2 {
+            color: #2d5a27;
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .meditation-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+
+        .meta-item {
+            text-align: center;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .meta-label {
+            font-weight: 600;
+            color: #2d5a27;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .meditation-text {
+            line-height: 1.8;
+            font-size: 16px;
+            color: #444;
+            margin-bottom: 30px;
+            white-space: pre-line;
+        }
+
+        .audio-controls {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .audio-player {
+            width: 100%;
+            max-width: 400px;
+            margin-bottom: 20px;
+        }
+
+        .audio-status, .no-audio-status {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 8px;
+        }
+
+        .audio-status {
+            background: #e8f5e8;
+            border: 1px solid #4a7c59;
+        }
+
+        .no-audio-status {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+        }
+
+        .audio-info, .no-audio-info {
+            margin: 0;
+            font-size: 14px;
+            color: #2d5a27;
+        }
+
+        .new-meditation-btn {
+            background: linear-gradient(135deg, #2d5a27 0%, #4a7c59 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 12px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .new-meditation-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(45, 90, 39, 0.3);
+        }
+
+        .error {
+            background: #fee;
+            border: 1px solid #fcc;
+            color: #c33;
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .location-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .preferences-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🌿 Momentus</h1>
+            <p>Mindful Nature Meditation Generator</p>
+        </div>
+
+        <div id="meditationForm" class="card">
+            <h2 style="color: #2d5a27; margin-bottom: 30px; text-align: center;">Create Your Personalized Meditation</h2>
+            
+            <div class="form-group">
+                <label>📍 Your Location</label>
+                <div class="location-group">
+                    <input type="number" id="latitude" placeholder="Latitude" step="any">
+                    <input type="number" id="longitude" placeholder="Longitude" step="any">
+                    <button type="button" class="location-btn" onclick="getLocation()">Use My Location</button>
+                </div>
+            </div>
+
+            <div class="preferences-grid">
+                <div class="form-group">
+                    <label>⏱️ Duration</label>
+                    <select id="duration">
+                        <option value="180">3 minutes</option>
+                        <option value="300" selected>5 minutes</option>
+                        <option value="600">10 minutes</option>
+                        <option value="900">15 minutes</option>
+                        <option value="1200">20 minutes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>🧘 Mood</label>
+                    <select id="mood">
+                        <option value="calm" selected>Calm</option>
+                        <option value="energized">Energized</option>
+                        <option value="reflective">Reflective</option>
+                        <option value="peaceful">Peaceful</option>
+                        <option value="focused">Focused</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>🦎 Preferred Species</label>
+                    <select id="speciesType">
+                        <option value="">Any species</option>
+                        <option value="bird">Bird</option>
+                        <option value="mammal">Mammal</option>
+                        <option value="insect">Insect</option>
+                        <option value="fish">Fish</option>
+                        <option value="reptile">Reptile</option>
+                        <option value="amphibian">Amphibian</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="generate-btn" onclick="generateMeditation()">
+                🌱 Generate My Meditation
+            </button>
+        </div>
+
+        <div id="loadingCard" class="card loading" style="display: none;">
+            <div class="spinner"></div>
+            <h3>Creating your personalized meditation...</h3>
+            <p>Gathering local weather, species data, and lunar information</p>
+        </div>
+
+        <div id="errorCard" class="card" style="display: none;">
+            <div class="error">
+                <h3>Oops! Something went wrong</h3>
+                <p id="errorMessage"></p>
+                <button class="new-meditation-btn" onclick="showForm()" style="margin-top: 15px;">Try Again</button>
+            </div>
+        </div>
+
+        <div id="meditationDisplay" class="card meditation-display">
+            <div class="meditation-header">
+                <h2>Your Personalized Meditation</h2>
+                <p>Generated just for you based on your current environment</p>
+            </div>
+
+            <div class="meditation-meta">
+                <div class="meta-item">
+                    <span class="meta-label">🌤️ Weather</span>
+                    <span id="weatherInfo">--</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">🐾 Featured Species</span>
+                    <span id="speciesInfo">--</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">🌙 Lunar Phase</span>
+                    <span id="lunarInfo">--</span>
+                </div>
+                <div class="meta-item">
+                    <span class="meta-label">⏱️ Duration</span>
+                    <span id="durationInfo">--</span>
+                </div>
+            </div>
+
+            <div class="meditation-text" id="meditationText"></div>
+
+            <div class="audio-controls">
+                <div id="audioStatus" class="audio-status" style="display: none;">
+                    <p class="audio-info">🔊 Audio meditation ready to play</p>
+                </div>
+                <div id="noAudioStatus" class="no-audio-status" style="display: none;">
+                    <p class="no-audio-info">📖 Text-only meditation (audio not available)</p>
+                </div>
+                <audio id="audioPlayer" class="audio-player" controls style="display: none;">
+                    Your browser does not support the audio element.
+                </audio>
+                <button class="new-meditation-btn" onclick="showForm()">
+                    ✨ Create Another Meditation
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSession = null;
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                const btn = document.querySelector('.location-btn');
+                btn.textContent = 'Getting location...';
+                btn.disabled = true;
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        document.getElementById('latitude').value = position.coords.latitude.toFixed(6);
+                        document.getElementById('longitude').value = position.coords.longitude.toFixed(6);
+                        btn.textContent = 'Use My Location';
+                        btn.disabled = false;
+                    },
+                    (error) => {
+                        alert('Unable to get your location. Please enter coordinates manually.');
+                        btn.textContent = 'Use My Location';
+                        btn.disabled = false;
+                    }
+                );
+            } else {
+                alert('Geolocation is not supported by this browser.');
+            }
+        }
+
+        async function generateMeditation(skipLocationCheck = false) {
+            const latitude = parseFloat(document.getElementById('latitude').value);
+            const longitude = parseFloat(document.getElementById('longitude').value);
+            const duration = parseInt(document.getElementById('duration').value);
+            const mood = document.getElementById('mood').value;
+            const speciesType = document.getElementById('speciesType').value;
+
+            if (isNaN(latitude) || isNaN(longitude)) {
+                alert('Please enter valid coordinates or use your current location.');
+                return;
+            }
+
+            if (latitude < -90 || latitude > 90) {
+                alert('Latitude must be between -90 and 90 degrees.');
+                return;
+            }
+
+            if (longitude < -180 || longitude > 180) {
+                alert('Longitude must be between -180 and 180 degrees.');
+                return;
+            }
+
+            // Check for location change unless explicitly skipped
+            if (!skipLocationCheck) {
+                try {
+                    const locationCheck = await fetch('/api/sessions/check-location', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ latitude, longitude })
+                    });
+
+                    const locationData = await locationCheck.json();
+                    
+                    if (locationData.locationChanged) {
+                        const userConfirmed = confirm(
+                            `We detected you've moved to a new location (${locationData.distance}km away). ` +
+                            'Would you like to refresh your local species data for a more personalized meditation? ' +
+                            'This will provide species and nature context specific to your current area.'
+                        );
+
+                        if (userConfirmed) {
+                            // Update location cache
+                            await fetch('/api/sessions/confirm-location', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({ latitude, longitude })
+                            });
+                        }
+                    }
+                } catch (error) {
+                    console.warn('Location check failed, proceeding with meditation generation:', error);
+                }
+            }
+
+            showLoading();
+
+            const requestBody = {
+                latitude,
+                longitude,
+                preferences: {
+                    duration,
+                    mood
+                },
+                skipLocationCheck: true // Skip check in session creation since we already did it
+            };
+
+            if (speciesType) {
+                requestBody.preferences.speciesType = speciesType;
+            }
+
+            try {
+                const response = await fetch('/api/sessions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(requestBody)
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentSession = data.session;
+                    displayMeditation(data.session);
+                } else {
+                    showError(data.message || 'Failed to generate meditation');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                showError('Network error occurred. Please check your connection and try again.');
+            }
+        }
+
+        function showForm() {
+            document.getElementById('meditationForm').style.display = 'block';
+            document.getElementById('loadingCard').style.display = 'none';
+            document.getElementById('errorCard').style.display = 'none';
+            document.getElementById('meditationDisplay').classList.remove('visible');
+        }
+
+        function showLoading() {
+            document.getElementById('meditationForm').style.display = 'none';
+            document.getElementById('loadingCard').style.display = 'block';
+            document.getElementById('errorCard').style.display = 'none';
+            document.getElementById('meditationDisplay').classList.remove('visible');
+        }
+
+        function showError(message) {
+            document.getElementById('meditationForm').style.display = 'none';
+            document.getElementById('loadingCard').style.display = 'none';
+            document.getElementById('errorCard').style.display = 'block';
+            document.getElementById('errorMessage').textContent = message;
+            document.getElementById('meditationDisplay').classList.remove('visible');
+        }
+
+        function displayMeditation(session) {
+            document.getElementById('meditationForm').style.display = 'none';
+            document.getElementById('loadingCard').style.display = 'none';
+            document.getElementById('errorCard').style.display = 'none';
+
+            // Populate metadata
+            document.getElementById('weatherInfo').textContent = 
+                `${session.weather.description}, ${session.weather.temperature}°C`;
+            
+            document.getElementById('speciesInfo').textContent = 
+                session.species.name + (session.species.scientificName ? ` (${session.species.scientificName})` : '');
+            
+            document.getElementById('lunarInfo').textContent = 
+                `${session.lunar.phase} (${session.lunar.illumination}%)`;
+            
+            const durationMinutes = Math.floor(session.content.duration / 60);
+            document.getElementById('durationInfo').textContent = `${durationMinutes} minutes`;
+
+            // Display meditation text
+            document.getElementById('meditationText').textContent = session.content.text;
+
+            // Handle audio if available
+            const audioPlayer = document.getElementById('audioPlayer');
+            const audioStatus = document.getElementById('audioStatus');
+            const noAudioStatus = document.getElementById('noAudioStatus');
+            
+            if (session.audio && session.audio.filename) {
+                audioPlayer.src = `/audio/${session.audio.filename}`;
+                audioPlayer.style.display = 'block';
+                audioStatus.style.display = 'block';
+                noAudioStatus.style.display = 'none';
+            } else {
+                audioPlayer.style.display = 'none';
+                audioStatus.style.display = 'none';
+                noAudioStatus.style.display = 'block';
+            }
+
+            document.getElementById('meditationDisplay').classList.add('visible');
+        }
+
+        // Auto-detect location on page load
+        window.addEventListener('load', () => {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        document.getElementById('latitude').value = position.coords.latitude.toFixed(6);
+                        document.getElementById('longitude').value = position.coords.longitude.toFixed(6);
+                    },
+                    () => {
+                        // Silently fail - user can manually enter location
+                    }
+                );
+            }
+        });
+    </script>
+</body>
+</html>
