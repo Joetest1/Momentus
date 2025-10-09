@@ -1,0 +1,15 @@
+{
+  "name": "momentus",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Momentus – mindful nature meditation generator (root workspace)",
+  "scripts": {
+    "start": "npm --prefix backend start",
+    "dev": "npm --prefix backend run dev",
+    "test": "npm --prefix backend run test",
+    "integration": "node backend/tests/test-meditation-system.js"
+  },
+  "workspaces": [
+    "backend"
+  ]
+}
