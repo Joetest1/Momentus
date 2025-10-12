@@ -351,6 +351,7 @@
                     <input type="number" id="test-lng" value="-117.2437" step="0.0001" style="width: 100%; padding: 8px; margin: 5px 0; border-radius: 4px; border: 1px solid #ddd;">
                     <button class="btn" onclick="testMeditation()" style="margin-top: 10px; width: 100%;">Generate Test Meditation</button>
                     <button class="btn" onclick="generateTwice()" style="margin-top: 10px; width: 100%; background: #4c51bf;">Generate Twice</button>
+                    <button class="btn" onclick="showFeedbackModal()" style="margin-top: 10px; width: 100%; background: #28a745;">⭐ Rate Meditation</button>
                 </div>
                 <div id="meditation-output">
                     <p style="color: #718096;">Click "Generate Test Meditation" to preview</p>
@@ -438,6 +439,45 @@
                 </div>
             </div>
         </div>
+    </div>
+
+    <!-- Feedback Analytics -->
+    <div class="card">
+        <h2>📊 Feedback Analytics</h2>
+        <div class="grid">
+            <div class="stat-box">
+                <div class="stat-number" id="feedback-total">-</div>
+                <div class="stat-label">Total Feedback</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="feedback-recent">-</div>
+                <div class="stat-label">Recent (24h)</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="feedback-avg-overall">-</div>
+                <div class="stat-label">Avg Overall</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-number" id="feedback-avg-engagement">-</div>
+                <div class="stat-label">Avg Engagement</div>
+            </div>
+        </div>
+        <div style="margin-top: 20px;">
+            <h3 style="color: #667eea; margin-bottom: 10px;">Rating Averages (1-10)</h3>
+            <div id="feedback-ratings-chart" style="display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 15px;">
+                <!-- Rating bars will be inserted here -->
+            </div>
+            <div id="feedback-insights" style="background: #f7fafc; padding: 12px; border-radius: 6px; border-left: 4px solid #667eea;">
+                <strong>AI Insights:</strong> <span id="insights-text">Loading...</span>
+            </div>
+            <div id="feedback-adjustments" style="margin-top: 15px;">
+                <h4 style="color: #667eea; margin-bottom: 8px;">Current AI Adjustments</h4>
+                <div id="adjustments-list" style="background: #fffaf0; padding: 10px; border-radius: 4px; font-size: 0.9em;">
+                    <!-- Adjustments will be listed here -->
+                </div>
+            </div>
+        </div>
+        <button class="btn" onclick="loadFeedbackStats()" style="margin-top: 15px;">🔄 Refresh Analytics</button>
     </div>
 
     <script>
@@ -531,6 +571,93 @@
                 }
             } catch (error) {
                 console.error('Failed to load stats:', error);
+            }
+        }
+
+        // Load feedback analytics
+        async function loadFeedbackStats() {
+            try {
+                const res = await fetch('/api/admin/feedback-stats');
+                const data = await res.json();
+
+                if (data.success) {
+                    const stats = data.stats;
+                    const analysis = stats.recentAnalysis;
+
+                    // Update basic stats
+                    document.getElementById('feedback-total').textContent = stats.totalEntries;
+                    document.getElementById('feedback-recent').textContent = analysis.sampleSize;
+                    document.getElementById('feedback-avg-overall').textContent = analysis.averages.overall.toFixed(1);
+                    document.getElementById('feedback-avg-engagement').textContent = analysis.averages.engagement.toFixed(1);
+
+                    // Create rating bars chart
+                    const chartContainer = document.getElementById('feedback-ratings-chart');
+                    chartContainer.innerHTML = '';
+
+                    const dimensions = [
+                        { key: 'relevance', label: 'Relevance', color: '#667eea' },
+                        { key: 'groundedness', label: 'Groundedness', color: '#48bb78' },
+                        { key: 'engagement', label: 'Engagement', color: '#ed8936' },
+                        { key: 'ttsQuality', label: 'TTS Quality', color: '#9f7aea' },
+                        { key: 'overall', label: 'Overall', color: '#e53e3e' }
+                    ];
+
+                    dimensions.forEach(dim => {
+                        const value = analysis.averages[dim.key];
+                        const percentage = (value / 10) * 100;
+
+                        const bar = document.createElement('div');
+                        bar.style.cssText = `
+                            flex: 1;
+                            min-width: 120px;
+                            text-align: center;
+                        `;
+
+                        bar.innerHTML = `
+                            <div style="font-size: 0.8em; color: #666; margin-bottom: 5px;">${dim.label}</div>
+                            <div style="background: #e2e8f0; height: 20px; border-radius: 10px; overflow: hidden; margin-bottom: 5px;">
+                                <div style="background: ${dim.color}; height: 100%; width: ${percentage}%; border-radius: 10px; transition: width 0.3s ease;"></div>
+                            </div>
+                            <div style="font-weight: bold; color: ${dim.color};">${value.toFixed(1)}</div>
+                        `;
+
+                        chartContainer.appendChild(bar);
+                    });
+
+                    // Update insights
+                    document.getElementById('insights-text').textContent = analysis.insights;
+
+                    // Update adjustments
+                    const adjustmentsList = document.getElementById('adjustments-list');
+                    adjustmentsList.innerHTML = '';
+
+                    if (Object.keys(analysis.adjustments).length === 0) {
+                        adjustmentsList.innerHTML = '<em>No adjustments needed - ratings are strong!</em>';
+                    } else {
+                        Object.entries(analysis.adjustments).forEach(([key, adjustment]) => {
+                            const item = document.createElement('div');
+                            item.style.cssText = `
+                                margin-bottom: 8px;
+                                padding: 6px;
+                                background: ${adjustment.priority === 'high' ? '#fed7d7' : adjustment.priority === 'medium' ? '#fef5e7' : '#f0fff4'};
+                                border-radius: 4px;
+                                border-left: 3px solid ${adjustment.priority === 'high' ? '#e53e3e' : adjustment.priority === 'medium' ? '#ed8936' : '#38a169'};
+                            `;
+
+                            item.innerHTML = `
+                                <strong>${key.charAt(0).toUpperCase() + key.slice(1)} (${adjustment.priority} priority):</strong>
+                                <ul style="margin: 4px 0 0 16px; padding: 0;">
+                                    ${adjustment.suggestions.map(s => `<li style="margin: 2px 0;">${s}</li>`).join('')}
+                                </ul>
+                            `;
+
+                            adjustmentsList.appendChild(item);
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Failed to load feedback stats:', error);
+                document.getElementById('insights-text').textContent = 'Error loading analytics';
             }
         }
 
@@ -1142,10 +1269,113 @@
             }
         }
 
+        // Feedback Modal Functions
+        function showFeedbackModal() {
+            document.getElementById('feedback-modal').style.display = 'flex';
+            updateSliderValues();
+        }
+
+        function closeFeedbackModal() {
+            document.getElementById('feedback-modal').style.display = 'none';
+        }
+
+        function updateSliderValues() {
+            document.getElementById('relevance-value').textContent = document.getElementById('rating-relevance').value;
+            document.getElementById('groundedness-value').textContent = document.getElementById('rating-groundedness').value;
+            document.getElementById('engagement-value').textContent = document.getElementById('rating-engagement').value;
+            document.getElementById('tts-value').textContent = document.getElementById('rating-tts').value;
+            document.getElementById('overall-value').textContent = document.getElementById('rating-overall').value;
+        }
+
+        // Update values on slider change
+        document.getElementById('rating-relevance').addEventListener('input', () => document.getElementById('relevance-value').textContent = document.getElementById('rating-relevance').value);
+        document.getElementById('rating-groundedness').addEventListener('input', () => document.getElementById('groundedness-value').textContent = document.getElementById('rating-groundedness').value);
+        document.getElementById('rating-engagement').addEventListener('input', () => document.getElementById('engagement-value').textContent = document.getElementById('rating-engagement').value);
+        document.getElementById('rating-tts').addEventListener('input', () => document.getElementById('tts-value').textContent = document.getElementById('rating-tts').value);
+        document.getElementById('rating-overall').addEventListener('input', () => document.getElementById('overall-value').textContent = document.getElementById('rating-overall').value);
+
+        async function submitFeedback() {
+            const feedback = {
+                relevance: parseInt(document.getElementById('rating-relevance').value),
+                groundedness: parseInt(document.getElementById('rating-groundedness').value),
+                engagement: parseInt(document.getElementById('rating-engagement').value),
+                ttsQuality: parseInt(document.getElementById('rating-tts').value),
+                overall: parseInt(document.getElementById('rating-overall').value),
+                comments: document.getElementById('feedback-comments').value.trim(),
+                timestamp: new Date().toISOString(),
+                sessionId: 'admin-test-' + Date.now() // Placeholder for session tracking
+            };
+
+            try {
+                const response = await fetch('/api/admin/feedback', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(feedback)
+                });
+
+                if (response.ok) {
+                    alert('Thank you for your feedback!');
+                    closeFeedbackModal();
+                    // Reset form
+                    document.getElementById('feedback-form').reset();
+                    updateSliderValues();
+                } else {
+                    alert('Failed to submit feedback. Please try again.');
+                }
+            } catch (error) {
+                console.error('Feedback submission error:', error);
+                alert('Error submitting feedback: ' + error.message);
+            }
+        }
+
         // Load on page load
         loadConfig();
         loadStats();
+        loadFeedbackStats();
         setInterval(loadStats, 10000); // Refresh stats every 10 seconds
+        setInterval(loadFeedbackStats, 30000); // Refresh feedback every 30 seconds
     </script>
+
+    <!-- Feedback Modal -->
+    <div id="feedback-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div style="background: white; padding: 30px; border-radius: 12px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
+            <h3 style="margin-bottom: 20px; color: #667eea;">Rate Your Meditation Experience</h3>
+            <form id="feedback-form">
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">1. Relevance to Environment (1-10)</label>
+                    <input type="range" id="rating-relevance" min="1" max="10" value="5" style="width: 100%;">
+                    <span id="relevance-value" style="font-size: 0.9em; color: #666;">5</span>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">2. Emotional Groundedness (1-10)</label>
+                    <input type="range" id="rating-groundedness" min="1" max="10" value="5" style="width: 100%;">
+                    <span id="groundedness-value" style="font-size: 0.9em; color: #666;">5</span>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">3. Engagement with Nature (1-10)</label>
+                    <input type="range" id="rating-engagement" min="1" max="10" value="5" style="width: 100%;">
+                    <span id="engagement-value" style="font-size: 0.9em; color: #666;">5</span>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">4. Audio/TTS Quality (1-10)</label>
+                    <input type="range" id="rating-tts" min="1" max="10" value="5" style="width: 100%;">
+                    <span id="tts-value" style="font-size: 0.9em; color: #666;">5</span>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">5. Overall Satisfaction (1-10)</label>
+                    <input type="range" id="rating-overall" min="1" max="10" value="5" style="width: 100%;">
+                    <span id="overall-value" style="font-size: 0.9em; color: #666;">5</span>
+                </div>
+                <div style="margin-bottom: 20px;">
+                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Comments (Optional)</label>
+                    <textarea id="feedback-comments" rows="3" style="width: 100%; padding: 8px; border-radius: 4px; border: 1px solid #ddd;" placeholder="What stood out or could be improved?"></textarea>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" onclick="submitFeedback()" class="btn" style="flex: 1;">Submit Feedback</button>
+                    <button type="button" onclick="closeFeedbackModal()" class="btn btn-secondary" style="flex: 1;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
 </body>
 </html>

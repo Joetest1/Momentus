@@ -2,6 +2,7 @@
 const { getInstance: getAIProvider } = require('./AIProviderService');
 const APIService = require('./APIService');
 const LunarService = require('./LunarService');
+const FeedbackAnalyzerService = require('./FeedbackAnalyzerService');
 const logger = require('../utils/logger');
 
 class ContentGenerationService {
@@ -9,6 +10,7 @@ class ContentGenerationService {
     this.cache = new Map();
     this.lunarService = new LunarService();
     this.aiProvider = getAIProvider();
+    this.feedbackAnalyzer = new FeedbackAnalyzerService();
   }
 
   async generateContent({ weather, species, preferences, sessionId, lunar, behavior, datetime, timeOfDay, location, moonriseInfo, specialDayGuidance }) {
@@ -19,7 +21,7 @@ class ContentGenerationService {
     }
 
     try {
-      const prompt = this.buildPrompt({
+      const prompt = await this.buildPrompt({
         weather,
         species,
         preferences,
@@ -55,11 +57,14 @@ class ContentGenerationService {
     }
   }
 
-  buildPrompt({ weather, species, preferences, lunar, behavior, datetime, timeOfDay, moonriseInfo, specialDayGuidance }) {
+  async buildPrompt({ weather, species, preferences, lunar, behavior, datetime, timeOfDay, moonriseInfo, specialDayGuidance }) {
     const duration = preferences.duration || 300;
     const mood = preferences.mood || 'calm';
     const durationMinutes = Math.floor(duration / 60);
     const targetWords = duration >= 300 ? '300-600' : '150-300';
+
+    // Get feedback-based adjustments
+    const feedbackAdjustments = await this.feedbackAnalyzer.getPromptAdjustments().catch(() => ({}));
 
     // Determine time context
     const hour = datetime ? datetime.getHours() : new Date().getHours();
@@ -142,7 +147,7 @@ ${specialDayContext}
 
 MEDITATION REQUIREMENTS:
 1. **Perspective**: Second-person ("You notice...", "Your breath...", "Watch as...")
-2. **Sensory Details**: Integrate sight, sound, temperature, touch, breath
+2. **Sensory Details**: Integrate sight, sound, temperature, touch, breath${this.getFeedbackInstructions(feedbackAdjustments)}
 3. **Lunar Integration**: ${nearMoonrise ? `IMPORTANT: Skillfully integrate the moonrise (${moonriseContext.trim()}) as a special moment` : includeLunar ? `Subtly mention the moon as visible in the ${timeOfDay} sky - "${lunarContext}"` : 'Do NOT mention the moon (not astronomically visible at this time)'}
 4. **Behavior Focus**: Center on the specific behavior: ${behaviorText}
 5. **Tone**: Minimal, contemplative, observational — NO affirmations, metaphysics, or life lessons
@@ -184,7 +189,7 @@ ${specialDayContext}
 
 MEDITATION REQUIREMENTS:
 1. **Perspective**: Second-person ("You notice...", "Your breath...", "Watch as...")
-2. **Sensory Details**: Sight, sound, temperature, touch, breath
+2. **Sensory Details**: Sight, sound, temperature, touch, breath${this.getFeedbackInstructions(feedbackAdjustments)}
 3. **Lunar Integration**: ${nearMoonrise ? `IMPORTANT: Skillfully integrate the moonrise (${moonriseContext.trim()}) as a special moment` : includeLunar ? `Subtly mention the moon as visible in the ${timeOfDay} sky - "${lunarContext}"` : 'Do NOT mention the moon (not astronomically visible at this time)'}
 4. **Behavior Focus**: ${behaviorText}
 5. **Tone**: Minimal, contemplative — NO affirmations, metaphysics, or exaggeration
@@ -227,6 +232,30 @@ Write the complete ${durationMinutes}-minute meditation:`;
     // Example output:
     // "First short paragraph...\nSecond short paragraph...\nThird short paragraph"
     return paragraphs.join('...\n');
+  }
+
+  getFeedbackInstructions(adjustments) {
+    const instructions = [];
+
+    if (adjustments.environmentalFocus === 'high') {
+      instructions.push(' - PRIORITY: Significantly increase environmental relevance with location-specific details and habitat descriptions');
+    }
+
+    if (adjustments.groundingEmphasis === 'high') {
+      instructions.push(' - PRIORITY: Strengthen grounding elements with more physical sensations, earth connection, and present-moment awareness');
+    } else if (adjustments.groundingEmphasis === 'maintain') {
+      instructions.push(' - MAINTAIN: Continue strong grounding techniques that have been effective');
+    }
+
+    if (adjustments.natureVividness === 'high') {
+      instructions.push(' - PRIORITY: Enhance nature engagement with more vivid imagery, dynamic species behaviors, and emotional wildlife connections');
+    }
+
+    if (adjustments.audioFormatting === 'review') {
+      instructions.push(' - REVIEW: Optimize audio formatting for better natural flow and pause timing');
+    }
+
+    return instructions.length > 0 ? '\n' + instructions.join('\n') : '';
   }
 
   /**

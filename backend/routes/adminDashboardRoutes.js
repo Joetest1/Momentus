@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const { getInstance: getAIProvider } = require('../services/AIProviderService');
 const { getInstance: getSessionManager } = require('../services/SessionManager');
+const FeedbackAnalyzerService = require('../services/FeedbackAnalyzerService');
 const logger = require('../utils/logger');
 
 /**
@@ -501,6 +502,116 @@ router.post('/toggle-feature', async (req, res, next) => {
       message: 'Feature toggling requires environment configuration update',
       feature,
       enabled
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Submit meditation feedback
+router.post('/feedback', async (req, res, next) => {
+  try {
+    const { ratings, context, userAgent, source, sessionId, timestamp, comments } = req.body;
+
+    let relevance, groundedness, engagement, ttsQuality, overall;
+
+    // Handle both formats: individual ratings or ratings object
+    if (ratings && typeof ratings === 'object') {
+      // New format from user app
+      relevance = ratings.relevance;
+      groundedness = ratings.groundedness;
+      engagement = ratings.engagement;
+      ttsQuality = ratings.tts;
+      overall = ratings.overall;
+    } else {
+      // Legacy format from admin dashboard
+      ({ relevance, groundedness, engagement, ttsQuality, overall } = req.body);
+    }
+
+    // Convert to numbers if they're strings (from JSON parsing)
+    relevance = Number(relevance);
+    groundedness = Number(groundedness);
+    engagement = Number(engagement);
+    ttsQuality = Number(ttsQuality);
+    overall = Number(overall);
+
+    // Validate required fields
+    if (typeof relevance !== 'number' || typeof groundedness !== 'number' ||
+        typeof engagement !== 'number' || typeof ttsQuality !== 'number' ||
+        typeof overall !== 'number') {
+      return res.status(400).json({
+        success: false,
+        error: 'All rating fields must be numbers between 1-10'
+      });
+    }
+
+    // Validate ranges
+    const ratingValues = [relevance, groundedness, engagement, ttsQuality, overall];
+    if (ratingValues.some(r => r < 1 || r > 10)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Ratings must be between 1 and 10'
+      });
+    }
+
+    const feedbackEntry = {
+      sessionId: sessionId || 'unknown',
+      timestamp: timestamp || new Date().toISOString(),
+      ratings: {
+        relevance,
+        groundedness,
+        engagement,
+        ttsQuality,
+        overall
+      },
+      comments: comments || '',
+      context: context || {},
+      userAgent: userAgent || '',
+      source: source || 'admin-dashboard'
+    };
+
+    // Store in feedback.json file
+    const fs = require('fs').promises;
+    const path = require('path');
+    const feedbackFile = path.join(__dirname, '../logs/feedback.json');
+
+    let feedbackData = [];
+    try {
+      const existingData = await fs.readFile(feedbackFile, 'utf8');
+      feedbackData = JSON.parse(existingData);
+    } catch (err) {
+      // File doesn't exist or is invalid, start fresh
+      feedbackData = [];
+    }
+
+    feedbackData.push(feedbackEntry);
+    await fs.writeFile(feedbackFile, JSON.stringify(feedbackData, null, 2));
+
+    logger.info('Meditation feedback submitted', {
+      sessionId: feedbackEntry.sessionId,
+      averageRating: ratingValues.reduce((a, b) => a + b, 0) / 5,
+      source: feedbackEntry.source
+    });
+
+    res.json({
+      success: true,
+      message: 'Feedback submitted successfully',
+      entryId: feedbackData.length
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+// Get feedback analytics
+router.get('/feedback-stats', async (req, res, next) => {
+  try {
+    const feedbackAnalyzer = new FeedbackAnalyzerService();
+    const stats = await feedbackAnalyzer.getStats();
+
+    res.json({
+      success: true,
+      stats
     });
   } catch (error) {
     next(error);
