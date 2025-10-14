@@ -61,7 +61,10 @@ class ContentGenerationService {
     const duration = preferences.duration || 300;
     const mood = preferences.mood || 'calm';
     const durationMinutes = Math.floor(duration / 60);
-    const targetWords = duration >= 300 ? '300-600' : '150-300';
+    // More precise word count targets: 150 words per minute of meditation
+    const targetWords = Math.floor(duration / 60 * 150);
+    const minWords = Math.floor(targetWords * 0.9);  // 90% of target
+    const maxWords = Math.floor(targetWords * 1.1);  // 110% of target
 
     // Get feedback-based adjustments
     const feedbackAdjustments = await this.feedbackAnalyzer.getPromptAdjustments().catch(() => ({}));
@@ -161,7 +164,7 @@ FORBIDDEN PHRASES:
 - "Day 14", "Day 15", or any lunar day references
 - Any exaggeration or motivational language
 
-STRUCTURE (${targetWords} words total):
+STRUCTURE (${minWords}-${maxWords} words total for ${durationMinutes} minutes):
 - **Opening** (20%): Place listener in ${locationName}, ${timeOfDay}
 - **Body** (60%): Vivid scene of ${species.name} ${behaviorText}, using sensory details
 - **Closing** (20%): Return to breath, carry this moment forward
@@ -170,6 +173,8 @@ FORMAT FOR TTS:
 - Short paragraphs (2-3 sentences max)
 - Empty line between paragraphs = natural pause
 - No stage directions like "pause here" or "breathe"
+
+CRITICAL: This MUST be a full ${durationMinutes}-minute meditation with ${minWords}-${maxWords} words. Generate the COMPLETE meditation script with multiple paragraphs to fill the entire duration.
 
 Write the complete ${durationMinutes}-minute meditation script NOW:`;
 
@@ -201,7 +206,7 @@ FORBIDDEN:
 - "Let go of..." or similar clichés
 - "Day 14", "Day 15", or any lunar day references
 
-STRUCTURE (${targetWords} words):
+STRUCTURE (${minWords}-${maxWords} words total for ${durationMinutes} minutes):
 - **Opening** (20%): Set the scene
 - **Body** (60%): ${species.name} ${behaviorText}, vivid sensory details
 - **Closing** (20%): Return to breath
@@ -210,6 +215,8 @@ FORMAT FOR TTS:
 - Short paragraphs
 - Empty lines = pauses
 - No explicit pause instructions
+
+CRITICAL: This MUST be a full ${durationMinutes}-minute meditation with ${minWords}-${maxWords} words. Generate the COMPLETE meditation script with multiple paragraphs to fill the entire duration.
 
 Write the complete ${durationMinutes}-minute meditation:`;
     }
@@ -318,15 +325,7 @@ Write the complete ${durationMinutes}-minute meditation:`;
     }, 1800000);
   }
 
-  getTimeOfDay() {
-    const hour = new Date().getHours();
-    if (hour < 6) return 'early morning, before dawn';
-    if (hour < 12) return 'morning';
-    if (hour < 17) return 'afternoon';
-    if (hour < 20) return 'evening';
-    return 'night';
-  }
-getTimeAgo(observedAt) {
+  getTimeAgo(observedAt) {
     const observed = new Date(observedAt);
     const now = new Date();
     const diffMs = now - observed;
