@@ -65,8 +65,16 @@ class SessionManager {
       });
       logger.debug(`Species selected for session ${sessionId}`, { species });
 
-      // Determine time of day for behavior selection
-      const timeOfDay = this.getTimeOfDay(datetime);
+      // Determine time of day using weather API's sunrise/sunset data for accuracy
+      const timeOfDay = this.getTimeOfDayFromWeather(datetime, weather);
+      
+      logger.debug(`Time of day determined for session ${sessionId}`, {
+        localTime: datetime.toISOString(),
+        hour: datetime.getHours(),
+        timeOfDay: timeOfDay,
+        sunrise: weather.sunrise ? new Date(weather.sunrise * 1000).toLocaleTimeString() : 'N/A',
+        sunset: weather.sunset ? new Date(weather.sunset * 1000).toLocaleTimeString() : 'N/A'
+      });
 
       // Select biologically accurate behavior based on context
       const behavior = this.behaviorDatabase.selectBehavior(species.type || 'bird', {
@@ -226,7 +234,43 @@ As we come to a close, carry this sense of natural rhythm with you. You are not 
     return guessedTimezone;
   }
 
-  getTimeOfDay(date = new Date()) {
+  /**
+   * Determine time of day using actual sunrise/sunset from weather API
+   * This is more accurate than timezone-based hour calculations
+   * @param {Date} date - Current date/time
+   * @param {Object} weather - Weather data with sunrise/sunset timestamps
+   * @returns {string} Time of day (dawn, morning, afternoon, evening, dusk, night)
+   */
+  getTimeOfDayFromWeather(date, weather) {
+    const currentTime = date.getTime() / 1000; // Convert to Unix timestamp (seconds)
+    
+    // If we have sunrise/sunset data, use it for accurate determination
+    if (weather.sunrise && weather.sunset) {
+      const sunrise = weather.sunrise;
+      const sunset = weather.sunset;
+      const dawnStart = sunrise - 1800; // 30 minutes before sunrise
+      const morningEnd = sunrise + 21600; // 6 hours after sunrise (typically noon)
+      const eveningStart = sunset - 7200; // 2 hours before sunset
+      const duskStart = sunset - 1800; // 30 minutes before sunset
+      const duskEnd = sunset + 1800; // 30 minutes after sunset
+      
+      if (currentTime >= dawnStart && currentTime < sunrise) return 'dawn';
+      if (currentTime >= sunrise && currentTime < morningEnd) return 'morning';
+      if (currentTime >= morningEnd && currentTime < eveningStart) return 'afternoon';
+      if (currentTime >= eveningStart && currentTime < duskStart) return 'evening';
+      if (currentTime >= duskStart && currentTime < duskEnd) return 'dusk';
+      return 'night';
+    }
+    
+    // Fallback to hour-based calculation if no sunrise/sunset data
+    return this.getTimeOfDayFromHour(date);
+  }
+
+  /**
+   * Fallback time of day calculation based on hour only
+   * Less accurate than using actual sunrise/sunset
+   */
+  getTimeOfDayFromHour(date = new Date()) {
     const hour = date.getHours();
     if (hour >= 5 && hour < 6) return 'dawn';
     if (hour >= 6 && hour < 12) return 'morning';
