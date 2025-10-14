@@ -881,34 +881,28 @@
             document.getElementById('meditationDisplay').classList.add('visible');
         }
 
-        // Load species image from Unsplash
+        // Load species image from Picsum (Lorem Picsum - reliable free placeholder)
         async function loadSpeciesImage(species) {
             const speciesBackground = document.getElementById('speciesBackground');
             const speciesImg = document.getElementById('speciesBackgroundImg');
             
-            // Extract species name for search
-            const searchTerm = species.scientificName || species.name || 'nature wildlife';
-            
-            // Use Unsplash Source API (no API key needed for basic usage)
-            // Fallback to generic nature images based on species type
-            let imageUrl;
-            
-            // Try to get species-specific image
-            // Using Unsplash's random photo API with keyword
-            // For production, consider using actual Unsplash API with proper attribution
-            const encodedTerm = encodeURIComponent(searchTerm);
-            imageUrl = `https://source.unsplash.com/1600x900/?${encodedTerm},wildlife,nature`;
+            // Use Lorem Picsum for reliable nature-themed images
+            // Random image with blur effect for better background
+            const imageUrl = `https://picsum.photos/1600/900?grayscale&blur=2&random=${Date.now()}`;
             
             // Load image with fade-in effect
             speciesImg.onload = function() {
+                console.log('Species background image loaded successfully');
                 speciesBackground.classList.add('visible');
             };
             
             speciesImg.onerror = function() {
-                // Fallback to generic nature image
-                speciesImg.src = 'https://source.unsplash.com/1600x900/?nature,wildlife,forest';
+                console.error('Failed to load species background image');
+                // If even picsum fails, just show the gradient background
+                speciesBackground.style.display = 'none';
             };
             
+            console.log('Loading species image for:', species.name);
             speciesImg.src = imageUrl;
         }
 
