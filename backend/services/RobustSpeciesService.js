@@ -3,11 +3,10 @@ const logger = require('../utils/logger');
 
 class RobustSpeciesService {
   constructor() {
-    // Taxonomic classes with their GBIF keys
+    // Taxonomic classes with their GBIF keys (insects excluded)
     this.taxonomicClasses = [
       { name: 'birds', key: 212, displayName: 'Birds' },
       { name: 'mammals', key: 359, displayName: 'Mammals' },
-      { name: 'insects', key: 216, displayName: 'Insects' },
       { name: 'fish', key: 204, displayName: 'Fish' },
       { name: 'reptiles', key: 358, displayName: 'Reptiles' },
       { name: 'amphibians', key: 131, displayName: 'Amphibians' }
@@ -23,11 +22,10 @@ class RobustSpeciesService {
       evictions: 0
     };
 
-    // Global fallback species - guaranteed to always return something
+    // Global fallback species - guaranteed to always return something (insects excluded)
     this.globalFallbacks = {
       birds: ['House Sparrow', 'Rock Dove', 'European Starling', 'House Finch', 'American Robin'],
       mammals: ['House Mouse', 'Brown Rat', 'Domestic Cat', 'Domestic Dog', 'White-tailed Deer'],
-      insects: ['House Fly', 'Honey Bee', 'Carpenter Ant', 'German Cockroach', 'Fruit Fly'],
       fish: ['Goldfish', 'Carp', 'Bass', 'Trout', 'Catfish'],
       reptiles: ['House Gecko', 'Green Anole', 'Garter Snake', 'Box Turtle', 'Fence Lizard'],
       amphibians: ['American Bullfrog', 'Green Frog', 'Spring Peeper', 'Red-eared Slider', 'Wood Frog']
@@ -73,13 +71,7 @@ class RobustSpeciesService {
       'Carassius auratus': 'Goldfish',
       'Cyprinus carpio': 'Common Carp',
       'Micropterus salmoides': 'Largemouth Bass',
-      'Salmo trutta': 'Brown Trout',
-      
-      // Insects
-      'Musca domestica': 'House Fly',
-      'Apis mellifera': 'Honey Bee',
-      'Camponotus pennsylvanicus': 'Carpenter Ant',
-      'Drosophila melanogaster': 'Fruit Fly'
+      'Salmo trutta': 'Brown Trout'
     };
 
     // Regional species for major North American ecoregions

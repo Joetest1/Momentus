@@ -1084,12 +1084,11 @@
                     </div>
                 `;
 
-                // Add category breakdowns
-                const categoryOrder = ['bird', 'mammal', 'insect', 'amphibian', 'reptile', 'fish', 'other'];
+                // Add category breakdowns (insects excluded from species selection)
+                const categoryOrder = ['bird', 'mammal', 'amphibian', 'reptile', 'fish', 'other'];
                 const categoryIcons = {
                     bird: '🐦',
                     mammal: '🐾',
-                    insect: '🦋',
                     amphibian: '🐸',
                     reptile: '🦎',
                     fish: '🐟',
