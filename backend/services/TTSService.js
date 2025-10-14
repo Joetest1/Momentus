@@ -1,17 +1,20 @@
 // services/TTSService.js
-const textToSpeech = require('@google-cloud/text-to-speech');
+const axios = require('axios');
 const fs = require('fs').promises;
 const path = require('path');
 const logger = require('../utils/logger');
 
 /**
  * TTSService - Text-to-Speech for meditation audio
- * Uses Google Cloud TTS with British male voice (similar to David Attenborough)
+ * Uses Azure Cognitive Services TTS with natural British male voice
  */
 class TTSService {
   constructor() {
-    this.client = null;
+    this.apiKey = process.env.AZURE_TTS_API_KEY || null;
+    this.region = process.env.AZURE_TTS_REGION || 'eastus';
+    this.endpoint = `https://${this.region}.tts.speech.microsoft.com/cognitiveservices/v1`;
     this.audioDir = path.join(__dirname, '../audio');
+    this.isEnabled = false;
     this.initializeTTS();
   }
 
@@ -19,106 +22,116 @@ class TTSService {
     // Check if TTS is explicitly disabled
     if (process.env.DISABLE_TTS === 'true') {
       logger.info('TTS Service disabled via environment variable');
-      this.client = null;
+      this.isEnabled = false;
       return;
     }
 
     try {
-      // Google Cloud TTS will use GOOGLE_APPLICATION_CREDENTIALS env var
-      // or Application Default Credentials
-      this.client = new textToSpeech.TextToSpeechClient();
-
       // Create audio directory if it doesn't exist
       await fs.mkdir(this.audioDir, { recursive: true });
 
-      logger.info('TTS Service initialized successfully');
+      if (!this.apiKey) {
+        logger.warn('Azure TTS API key not configured, audio generation disabled');
+        this.isEnabled = false;
+        return;
+      }
+
+      this.isEnabled = true;
+      logger.info('TTS Service initialized successfully with Azure Cognitive Services');
     } catch (error) {
       logger.warn('TTS Service initialization failed, audio generation disabled', {
         error: error.message
       });
-      this.client = null;
+      this.isEnabled = false;
     }
   }
 
   /**
-   * Convert meditation text to speech audio
+   * Convert meditation text to speech audio using Azure TTS
    * @param {string} text - The meditation text to convert
    * @param {string} sessionId - Session ID for file naming
    * @returns {Promise<Object>} Audio file info
    */
   async generateAudio(text, sessionId) {
-    if (!this.client) {
-      logger.warn('TTS client not initialized, skipping audio generation');
+    if (!this.isEnabled) {
+      logger.debug('TTS not enabled, skipping audio generation');
       return null;
     }
 
     try {
-      // Prepare text for TTS (remove <pause> markers, add SSML breaks)
+      // Prepare text for TTS (convert to SSML with pauses)
       const ssmlText = this.prepareTextForTTS(text);
 
-      // Configure TTS request with David Attenborough-style voice
-      const request = {
-        input: { ssml: ssmlText },
-        voice: {
-          languageCode: 'en-GB',  // British English
-          name: 'en-GB-Wavenet-B', // Deep male British voice (closest to Attenborough)
-          ssmlGender: 'MALE'
-        },
-        audioConfig: {
-          audioEncoding: 'MP3',
-          speakingRate: 0.85,  // Slower, more measured pace like Attenborough
-          pitch: -2.0,         // Deeper voice
-          volumeGainDb: 0.0,
-          effectsProfileId: ['headphone-class-device']
-        }
-      };
+      // Azure TTS request with British male voice (Ryan - natural, documentary-style)
+      const ssml = `<speak version='1.0' xml:lang='en-GB'>
+        <voice name='en-GB-RyanNeural'>
+          <prosody rate='0.85' pitch='-5%'>
+            ${ssmlText}
+          </prosody>
+        </voice>
+      </speak>`;
 
-      // Generate audio
-      const [response] = await this.client.synthesizeSpeech(request);
+      // Make request to Azure TTS API
+      const response = await axios.post(
+        this.endpoint,
+        ssml,
+        {
+          headers: {
+            'Ocp-Apim-Subscription-Key': this.apiKey,
+            'Content-Type': 'application/ssml+xml',
+            'X-Microsoft-OutputFormat': 'audio-24khz-48kbitrate-mono-mp3'
+          },
+          responseType: 'arraybuffer',
+          timeout: 60000
+        }
+      );
 
       // Save audio file
       const filename = `meditation_${sessionId}.mp3`;
       const filepath = path.join(this.audioDir, filename);
-      await fs.writeFile(filepath, response.audioContent, 'binary');
+      await fs.writeFile(filepath, Buffer.from(response.data));
 
-      logger.info('Audio generated successfully', {
+      logger.info('Audio generated successfully with Azure TTS', {
         sessionId,
         filename,
-        size: response.audioContent.length
+        size: response.data.byteLength,
+        voice: 'en-GB-RyanNeural'
       });
 
       return {
         filename,
         filepath,
         url: `/audio/${filename}`,
-        size: response.audioContent.length,
+        size: response.data.byteLength,
         duration: this.estimateDuration(text),
-        voice: 'en-GB-Wavenet-B'
+        voice: 'en-GB-RyanNeural'
       };
 
     } catch (error) {
-      logger.error('Audio generation failed', {
+      logger.error('Audio generation failed with Azure TTS', {
         sessionId,
-        error: error.message
+        error: error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText
       });
       return null;
     }
   }
 
   /**
-   * Prepare text for TTS by converting <pause> markers to SSML breaks
+   * Prepare text for Azure TTS by converting pause markers to SSML breaks
    * @param {string} text - Raw meditation text
-   * @returns {string} SSML formatted text
+   * @returns {string} SSML formatted text (without outer speak tag)
    */
   prepareTextForTTS(text) {
-    // Replace <pause> markers with SSML break tags
-    let ssml = text.replace(/<pause>/g, '<break time="2s"/>');
+    // Replace ellipsis pauses (...) with SSML break tags
+    let ssml = text.replace(/\.\.\./g, '<break time="2s"/>');
 
     // Add extra breaks for paragraph spacing (double line breaks)
     ssml = ssml.replace(/\n\n/g, '<break time="1.5s"/>');
-
-    // Wrap in SSML speak tag
-    ssml = `<speak>${ssml}</speak>`;
+    
+    // Replace single newlines with shorter breaks
+    ssml = ssml.replace(/\n/g, '<break time="800ms"/>');
 
     return ssml;
   }
