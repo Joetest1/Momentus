@@ -177,17 +177,31 @@ FORBIDDEN PHRASES:
 - "Day 14", "Day 15", or any lunar day references
 - Any exaggeration or motivational language
 
-STRUCTURE (${minWords}-${maxWords} words total for ${durationMinutes} minutes):
-- **Opening** (20%): Place listener in ${locationName}, ${timeOfDay}
-- **Body** (60%): Vivid scene of ${species.name} ${behaviorText}, using sensory details
-- **Closing** (20%): Return to breath, carry this moment forward
+IMPORTANT ANTI-PATTERN RULES:
+- DO NOT alternate predictably between nature paragraphs and meditation paragraphs
+- VARY the length and rhythm of sections unpredictably
+- Sometimes linger on the animal for 3-4 paragraphs before any breath mention
+- Sometimes weave breath and observation together in the same moment
+- Occasionally skip breath entirely for extended periods
+- Let the animal's behavior dictate the flow, not a formula
+- Use surprising transitions and unexpected connections
+- Mix micro-observations (a wing twitch) with macro-context (weather shifting) irregularly
+
+STRUCTURAL VARIATION (${minWords}-${maxWords} words total for ${durationMinutes} minutes):
+Choose ONE of these organic structures randomly (do NOT follow a predictable pattern):
+
+Option A - "Slow Zoom": Start very wide (landscape, weather), gradually narrow to tiny details of ${species.name}, then suddenly shift to breath at unexpected moment
+Option B - "Behavior Immersion": Stay with ${species.name}'s ${behaviorText} for majority of meditation, only briefly touching on listener's body sensations
+Option C - "Rhythmic Weaving": Alternate between animal and breath in irregular intervals (2 paragraphs animal, 1 breath, 4 paragraphs animal, 2 breath, etc.)
+Option D - "Parallel Experience": Describe animal and listener's sensations simultaneously, blending them in the same sentences
+Option E - "Cinematic": Follow the animal like a nature documentary, with listener as quiet observer who only occasionally notes their own breath
 
 FORMAT FOR TTS:
 - Short paragraphs (2-3 sentences max)
 - Empty line between paragraphs = natural pause
 - No stage directions like "pause here" or "breathe"
 
-CRITICAL: This MUST be a full ${durationMinutes}-minute meditation with ${minWords}-${maxWords} words. Generate the COMPLETE meditation script with multiple paragraphs to fill the entire duration.
+CRITICAL: This MUST be a full ${durationMinutes}-minute meditation with ${minWords}-${maxWords} words. Break predictable patterns. Make it feel spontaneous and alive, not structured.
 
 Write the complete ${durationMinutes}-minute meditation script NOW:`;
 
@@ -222,15 +236,31 @@ FORBIDDEN:
 - "Let go of..." or similar clichés
 - "Day 14", "Day 15", or any lunar day references
 
-STRUCTURE (${minWords}-${maxWords} words total for ${durationMinutes} minutes):
-Follow the content distribution specified above. The meditation should flow naturally between nature observation, grounding sensations, and breath awareness according to the balance setting.
+IMPORTANT ANTI-PATTERN RULES:
+- DO NOT alternate predictably between nature paragraphs and meditation paragraphs
+- VARY the length and rhythm of sections unpredictably
+- Sometimes linger on the animal for 3-4 paragraphs before any breath mention
+- Sometimes weave breath and observation together in the same moment
+- Occasionally skip breath entirely for extended periods
+- Let the animal's behavior dictate the flow, not a formula
+- Use surprising transitions and unexpected connections
+- Mix micro-observations (a wing twitch) with macro-context (weather shifting) irregularly
+
+STRUCTURAL VARIATION (${minWords}-${maxWords} words total for ${durationMinutes} minutes):
+Choose ONE of these organic structures randomly (do NOT follow a predictable pattern):
+
+Option A - "Slow Zoom": Start very wide (landscape, weather), gradually narrow to tiny details of ${species.name}, then suddenly shift to breath at unexpected moment
+Option B - "Behavior Immersion": Stay with ${species.name}'s ${behaviorText} for majority of meditation, only briefly touching on listener's body sensations
+Option C - "Rhythmic Weaving": Alternate between animal and breath in irregular intervals (2 paragraphs animal, 1 breath, 4 paragraphs animal, 2 breath, etc.)
+Option D - "Parallel Experience": Describe animal and listener's sensations simultaneously, blending them in the same sentences
+Option E - "Cinematic": Follow the animal like a nature documentary, with listener as quiet observer who only occasionally notes their own breath
 
 FORMAT FOR TTS:
 - Short paragraphs
 - Empty lines = pauses
 - No explicit pause instructions
 
-CRITICAL: This MUST be a full ${durationMinutes}-minute meditation with ${minWords}-${maxWords} words. Generate the COMPLETE meditation script with multiple paragraphs to fill the entire duration.
+CRITICAL: This MUST be a full ${durationMinutes}-minute meditation with ${minWords}-${maxWords} words. Break predictable patterns. Make it feel spontaneous and alive, not structured.
 
 Write the complete ${durationMinutes}-minute meditation:`;
     }
