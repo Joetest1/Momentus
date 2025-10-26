@@ -61,6 +61,13 @@ class ContentGenerationService {
     const duration = preferences.duration || 300;
     const mood = preferences.mood || 'calm';
     const durationMinutes = Math.floor(duration / 60);
+    
+    // Advanced customization options (new!)
+    const meditationStyle = preferences.meditationStyle || 'naturalist';
+    const focusBalance = preferences.focusBalance !== undefined ? preferences.focusBalance : 1; // 0-3
+    const instructionDepth = preferences.instructionDepth !== undefined ? preferences.instructionDepth : 1; // 0-2
+    const philosophicalDepth = preferences.philosophicalDepth !== undefined ? preferences.philosophicalDepth : 0; // 0-2
+    
     // More precise word count targets: 150 words per minute of meditation
     const targetWords = Math.floor(duration / 60 * 150);
     const minWords = Math.floor(targetWords * 0.9);  // 90% of target
@@ -68,6 +75,12 @@ class ContentGenerationService {
 
     // Get feedback-based adjustments
     const feedbackAdjustments = await this.feedbackAnalyzer.getPromptAdjustments().catch(() => ({}));
+
+    // Build style-specific guidance
+    const styleGuidance = this.getStyleGuidance(meditationStyle, mood);
+    const balanceGuidance = this.getBalanceGuidance(focusBalance);
+    const instructionGuidance = this.getInstructionGuidance(instructionDepth);
+    const philosophicalGuidance = this.getPhilosophicalGuidance(philosophicalDepth);
 
     // Determine time context
     const hour = datetime ? datetime.getHours() : new Date().getHours();
@@ -193,12 +206,15 @@ ${includeLunar && !nearMoonrise ? `- Lunar phase: ${lunarContext} (visible in ${
 ${specialDayContext}
 
 MEDITATION REQUIREMENTS:
-1. **Perspective**: Second-person ("You notice...", "Your breath...", "Watch as...")
-2. **Sensory Details**: Sight, sound, temperature, touch, breath${this.getFeedbackInstructions(feedbackAdjustments)}
-3. **Lunar Integration**: ${nearMoonrise ? `IMPORTANT: Skillfully integrate the moonrise (${moonriseContext.trim()}) as a special moment` : includeLunar ? `Subtly mention the moon as visible in the ${timeOfDay} sky - "${lunarContext}"` : 'Do NOT mention the moon (not astronomically visible at this time)'}
-4. **Behavior Focus**: ${behaviorText}
-5. **Tone**: Minimal, contemplative — NO affirmations, metaphysics, or exaggeration
-6. **Audio Formatting**: Use ellipses (...) between short paragraphs. Do NOT include blank lines between paragraphs or the word "pause".
+1. **Style**: ${styleGuidance}
+2. **Content Balance**: ${balanceGuidance}
+3. **Instruction Level**: ${instructionGuidance}
+4. **Philosophical Approach**: ${philosophicalGuidance}
+5. **Perspective**: Second-person ("You notice...", "Your breath...", "Watch as...")
+6. **Sensory Details**: Sight, sound, temperature, touch, breath${this.getFeedbackInstructions(feedbackAdjustments)}
+7. **Lunar Integration**: ${nearMoonrise ? `IMPORTANT: Skillfully integrate the moonrise (${moonriseContext.trim()}) as a special moment` : includeLunar ? `Subtly mention the moon as visible in the ${timeOfDay} sky - "${lunarContext}"` : 'Do NOT mention the moon (not astronomically visible at this time)'}
+8. **Behavior Focus**: ${behaviorText}
+9. **Audio Formatting**: Use ellipses (...) between short paragraphs. Do NOT include blank lines between paragraphs or the word "pause".
 
 FORBIDDEN:
 - Generic wisdom or life lessons
@@ -207,9 +223,7 @@ FORBIDDEN:
 - "Day 14", "Day 15", or any lunar day references
 
 STRUCTURE (${minWords}-${maxWords} words total for ${durationMinutes} minutes):
-- **Opening** (20%): Set the scene
-- **Body** (60%): ${species.name} ${behaviorText}, vivid sensory details
-- **Closing** (20%): Return to breath
+Follow the content distribution specified above. The meditation should flow naturally between nature observation, grounding sensations, and breath awareness according to the balance setting.
 
 FORMAT FOR TTS:
 - Short paragraphs
@@ -376,6 +390,79 @@ Nothing to achieve. Simply present.
 As this meditation closes, the natural world continues its ancient patterns around you.`;
 
     return this.parseGeneratedContent(fallbackText, preferences);
+  }
+
+  /**
+   * Get style-specific guidance for meditation tone
+   * @param {string} style - naturalist, guided, contemplative, documentary
+   * @param {string} mood - calm, energized, reflective, peaceful, focused
+   * @returns {string} Style guidance text
+   */
+  getStyleGuidance(style, mood) {
+    const moodModifiers = {
+      calm: 'gentle and soothing',
+      energized: 'dynamic and engaging',
+      reflective: 'contemplative and introspective',
+      peaceful: 'serene and tranquil',
+      focused: 'direct and purposeful'
+    };
+    const moodTone = moodModifiers[mood] || 'gentle';
+
+    const styles = {
+      naturalist: `Adopt an observational, naturalist perspective with ${moodTone} tone. Focus on precise biological details and behaviors. Use scientific accuracy while maintaining meditative quality.`,
+      guided: `Use explicit, ${moodTone} guidance throughout. Include clear breath cues and body awareness prompts. Provide step-by-step instructions for grounding.`,
+      contemplative: `Use ${moodTone} awareness language. Integrate concepts of presence, non-conceptual awareness, and natural mindfulness. Allow space for insight.`,
+      documentary: `Take an educational, ${moodTone} approach. Include fascinating species facts, ecological relationships, and biological adaptations while maintaining meditative pacing.`
+    };
+
+    return styles[style] || styles.naturalist;
+  }
+
+  /**
+   * Get balance guidance for content distribution
+   * @param {number} balance - 0=nature, 1=balanced, 2=grounding, 3=meditative
+   * @returns {string} Balance guidance text
+   */
+  getBalanceGuidance(balance) {
+    const distributions = {
+      0: { animal: 80, grounding: 10, breath: 10, desc: 'HEAVILY nature-focused' },
+      1: { animal: 60, grounding: 20, breath: 20, desc: 'Balanced nature and mindfulness' },
+      2: { animal: 40, grounding: 30, breath: 30, desc: 'Grounding-focused with nature context' },
+      3: { animal: 30, grounding: 30, breath: 40, desc: 'MEDITATION-focused with nature as anchor' }
+    };
+
+    const dist = distributions[balance] || distributions[1];
+    return `Content distribution (${dist.desc}): ${dist.animal}% animal/nature observation, ${dist.grounding}% grounding/sensory awareness, ${dist.breath}% breath/body awareness. Maintain these ratios throughout the meditation.`;
+  }
+
+  /**
+   * Get instruction depth guidance
+   * @param {number} depth - 0=minimal, 1=moderate, 2=detailed
+   * @returns {string} Instruction guidance text
+   */
+  getInstructionGuidance(depth) {
+    const instructions = {
+      0: 'MINIMAL guidance: No explicit breath cues. Pure observational meditation. Let the scene speak for itself.',
+      1: 'MODERATE guidance: Include occasional breath cues (2-3 times). Balance observation with gentle reminders to return to breath.',
+      2: 'DETAILED guidance: Frequent breath cues (5-7 times). Explicit body awareness prompts. Clear instructions for grounding throughout.'
+    };
+
+    return instructions[depth] || instructions[1];
+  }
+
+  /**
+   * Get philosophical depth guidance
+   * @param {number} depth - 0=secular, 1=subtle, 2=contemplative
+   * @returns {string} Philosophical guidance text
+   */
+  getPhilosophicalGuidance(depth) {
+    const philosophies = {
+      0: `STRICTLY SECULAR: Forbidden phrases: "awareness", "presence", "consciousness", "non-dual", "non-conceptual mind", "witness", "being". Focus ONLY on sensory observation and breath.`,
+      1: `SUBTLY CONTEMPLATIVE: Allowed phrases: "awareness", "presence", "noticing". Forbidden: "non-dual", "non-conceptual mind", "consciousness". Light mindfulness language.`,
+      2: `DEEPLY CONTEMPLATIVE: Allowed phrases: "awareness", "presence", "non-conceptual mind", "consciousness", "witness", "being". Integrate contemplative wisdom naturally.`
+    };
+
+    return philosophies[depth] || philosophies[0];
   }
 
   clearCache() {

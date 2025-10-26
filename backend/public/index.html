@@ -542,6 +542,66 @@
                 </div>
             </div>
 
+            <!-- Advanced Customization Section -->
+            <div class="advanced-section" style="margin-top: 20px;">
+                <button type="button" class="toggle-advanced" onclick="toggleAdvanced()" style="width: 100%; padding: 12px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 15px; color: white; cursor: pointer; font-size: 1em; margin-bottom: 15px;">
+                    ⚙️ Advanced Customization <span id="advancedToggleIcon">▼</span>
+                </button>
+                
+                <div id="advancedControls" style="display: none;">
+                    <!-- Meditation Style -->
+                    <div class="form-group">
+                        <label>🎨 Meditation Style</label>
+                        <select id="meditationStyle">
+                            <option value="naturalist" selected>Naturalist (Pure observation)</option>
+                            <option value="guided">Guided (More breath awareness)</option>
+                            <option value="contemplative">Contemplative (Deeper introspection)</option>
+                            <option value="documentary">Documentary (Educational focus)</option>
+                        </select>
+                    </div>
+
+                    <!-- Focus Balance Slider -->
+                    <div class="form-group">
+                        <label>⚖️ Focus Balance: <span id="focusBalanceLabel">Balanced</span></label>
+                        <input type="range" id="focusBalance" min="0" max="3" value="1" step="1" 
+                               oninput="updateFocusLabel(this.value)"
+                               style="width: 100%; margin-top: 10px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85em; opacity: 0.8; margin-top: 5px;">
+                            <span>Nature</span>
+                            <span>Balanced</span>
+                            <span>Grounding</span>
+                            <span>Meditative</span>
+                        </div>
+                    </div>
+
+                    <!-- Instruction Depth Slider -->
+                    <div class="form-group">
+                        <label>📖 Instruction Depth: <span id="instructionDepthLabel">Moderate</span></label>
+                        <input type="range" id="instructionDepth" min="0" max="2" value="1" step="1"
+                               oninput="updateInstructionLabel(this.value)"
+                               style="width: 100%; margin-top: 10px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85em; opacity: 0.8; margin-top: 5px;">
+                            <span>Minimal</span>
+                            <span>Moderate</span>
+                            <span>Detailed</span>
+                        </div>
+                    </div>
+
+                    <!-- Philosophical Depth -->
+                    <div class="form-group">
+                        <label>🧠 Philosophical Depth: <span id="philosophicalDepthLabel">Secular</span></label>
+                        <input type="range" id="philosophicalDepth" min="0" max="2" value="0" step="1"
+                               oninput="updatePhilosophicalLabel(this.value)"
+                               style="width: 100%; margin-top: 10px;">
+                        <div style="display: flex; justify-content: space-between; font-size: 0.85em; opacity: 0.8; margin-top: 5px;">
+                            <span>Secular</span>
+                            <span>Subtle</span>
+                            <span>Contemplative</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <button class="generate-btn" onclick="generateMeditation()">
                 🌱 Generate My Meditation
             </button>
@@ -723,6 +783,12 @@
             const mood = document.getElementById('mood').value;
             const speciesType = document.getElementById('speciesType').value;
 
+            // Get advanced customization values
+            const meditationStyle = document.getElementById('meditationStyle').value;
+            const focusBalance = parseInt(document.getElementById('focusBalance').value);
+            const instructionDepth = parseInt(document.getElementById('instructionDepth').value);
+            const philosophicalDepth = parseInt(document.getElementById('philosophicalDepth').value);
+
             if (isNaN(latitude) || isNaN(longitude)) {
                 alert('Please enter valid coordinates or use your current location.');
                 return;
@@ -781,7 +847,11 @@
                 longitude,
                 preferences: {
                     duration,
-                    mood
+                    mood,
+                    meditationStyle,
+                    focusBalance,
+                    instructionDepth,
+                    philosophicalDepth
                 },
                 skipLocationCheck: true // Skip check in session creation since we already did it
             };
@@ -920,6 +990,36 @@
                 );
             }
         });
+
+        // Advanced controls toggle
+        function toggleAdvanced() {
+            const controls = document.getElementById('advancedControls');
+            const icon = document.getElementById('advancedToggleIcon');
+            
+            if (controls.style.display === 'none') {
+                controls.style.display = 'block';
+                icon.textContent = '▲';
+            } else {
+                controls.style.display = 'none';
+                icon.textContent = '▼';
+            }
+        }
+
+        // Label update functions for sliders
+        function updateFocusLabel(value) {
+            const labels = ['Nature-Focused', 'Balanced', 'Grounding-Focused', 'Meditative'];
+            document.getElementById('focusBalanceLabel').textContent = labels[value];
+        }
+
+        function updateInstructionLabel(value) {
+            const labels = ['Minimal', 'Moderate', 'Detailed'];
+            document.getElementById('instructionDepthLabel').textContent = labels[value];
+        }
+
+        function updatePhilosophicalLabel(value) {
+            const labels = ['Secular', 'Subtle', 'Contemplative'];
+            document.getElementById('philosophicalDepthLabel').textContent = labels[value];
+        }
 
         // Feedback modal functions
         function showFeedbackModal() {
