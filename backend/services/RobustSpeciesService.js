@@ -744,8 +744,18 @@ class RobustSpeciesService {
           coordinates: { latitude, longitude }
         });
 
-        // Use species search API instead of occurrence search to get vernacular names
-        const gbifUrl = `https://api.gbif.org/v1/species/search?rank=SPECIES&status=ACCEPTED&highertaxon_key=${taxonomicClass.key}&nameType=SCIENTIFIC&limit=100`;
+        // Use occurrence search API to get geographically-filtered species
+        // This ensures we only get species actually observed in the user's location
+        const currentYear = new Date().getFullYear();
+        const gbifUrl = `https://api.gbif.org/v1/occurrence/search?` +
+          `decimalLatitude=${latitude}&` +
+          `decimalLongitude=${longitude}&` +
+          `taxonKey=${taxonomicClass.key}&` +
+          `hasCoordinate=true&` +
+          `hasGeospatialIssue=false&` +
+          `year=${currentYear - 5},${currentYear}&` +  // Last 5 years
+          `occurrenceStatus=PRESENT&` +
+          `limit=300`;  // Get more occurrences to find unique species
 
         // Small delay to reduce chance of rate limits
         await new Promise(resolve => setTimeout(resolve, 250));
@@ -837,45 +847,27 @@ class RobustSpeciesService {
 
         const seen = new Map();
         if (data.results) {
-          // Process species results and fetch vernacular names when available
-          for (const species of data.results.slice(0, 50)) {  // Limit to avoid too many API calls
+          // Process occurrence results - filter by distance and extract unique species
+          for (const occurrence of data.results) {
+            // Calculate distance from user's location
+            const dist = this.calculateDistance(
+              latitude, 
+              longitude,
+              occurrence.decimalLatitude,
+              occurrence.decimalLongitude
+            );
+            
+            // Skip occurrences outside the radius
+            if (dist > radius) continue;
+            
+            // Extract species information
             let display = null;
             
-            // Try to get vernacular name from species record first
-            display = this.getBestVernacular(species);
-
-            // If no vernacular name in main record, try dedicated vernacular endpoint for key species
-            if (!display && species.key && seen.size < 20) {  // Limit vernacular API calls
-              try {
-                await sleep(100); // Rate limit protection
-                const vernResponse = await fetch(`https://api.gbif.org/v1/species/${species.key}/vernacularNames?limit=10`, {
-                  headers: {
-                    'Accept': 'application/json',
-                    'User-Agent': 'Momentus-Meditation-App/1.0'
-                  }
-                });
-                
-                if (vernResponse.ok) {
-                  const vernData = await vernResponse.json();
-                  if (vernData.results) {
-                    // Look for English vernacular names
-                    const englishName = vernData.results.find(v => 
-                      v.language === 'eng' && v.vernacularName && 
-                      this.isValidCommonName(this.sanitizeDisplayName(v.vernacularName))
-                    );
-                    if (englishName) {
-                      display = this.sanitizeDisplayName(englishName.vernacularName);
-                    }
-                  }
-                }
-              } catch (vernErr) {
-                // Continue without vernacular name if API fails
-                logger.debug(`Failed to fetch vernacular name for ${species.scientificName}`, { error: vernErr.message });
-              }
-            }
+            // Try to get vernacular name from occurrence record
+            display = this.getBestVernacular(occurrence);
 
             // Fall back to scientificName if no common name
-            const rawScientific = species.scientificName || species.canonicalName || '';
+            const rawScientific = occurrence.scientificName || occurrence.species || '';
             const scientific = this.extractBinomial(rawScientific) || '';
 
             // Check our curated scientific-to-common name mapping
@@ -1109,6 +1101,22 @@ class RobustSpeciesService {
       totalEntries: entries.length,
       details: entries.slice(0, 200)
     };
+  }
+
+  /**
+   * Calculate distance between two coordinates in kilometers
+   * Uses Haversine formula
+   */
+  calculateDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371; // Earth's radius in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+      Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
   }
 }
 

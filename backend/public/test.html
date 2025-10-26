@@ -1,10 +1,896 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Momentus Testing Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #1a3a2e 0%, #2d5a47 50%, #3d6d5a 100%);
+            min-height: 100vh;
+            color: #333;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(45, 90, 71, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(61, 109, 90, 0.3) 0%, transparent 50%);
+            animation: liquidFlow 15s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes liquidFlow {
+            0%, 100% {
+                transform: scale(1) translate(0, 0);
+                opacity: 0.6;
+            }
+            33% {
+                transform: scale(1.1) translate(5%, -5%);
+                opacity: 0.8;
+            }
+            66% {
+                transform: scale(0.95) translate(-5%, 5%);
+                opacity: 0.7;
+            }
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            padding: 30px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 300;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.4);
+            letter-spacing: 2px;
+        }
+
+        .header p {
+            opacity: 0.95;
+            text-shadow: 1px 1px 4px rgba(0,0,0,0.3);
+        }
+
+        .header a {
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .header a:hover {
+            color: white;
+            border-bottom-color: white;
+        }
+
+        /* Preset Management Bar */
+        .preset-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .preset-slot {
+            flex: 1;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            color: white;
+        }
+
+        .preset-slot.filled {
+            background: rgba(74, 124, 89, 0.4);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+        }
+
+        .preset-slot:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .preset-name {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .preset-summary {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+
+        .preset-actions {
+            margin-top: 10px;
+            display: none;
+        }
+
+        .preset-slot.filled .preset-actions {
+            display: block;
+        }
+
+        /* Main Testing Layout */
+        .testing-layout {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .settings-panel, .preview-panel {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+
+        .settings-panel {
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .panel-title {
+            color: white;
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: rgba(255, 255, 255, 0.95);
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            font-size: 14px;
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23ffffff' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            appearance: none;
+        }
+
+        select option {
+            background: rgba(29, 58, 46, 0.95);
+            color: white;
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 10px;
+            height: 8px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid rgba(74, 124, 89, 0.6);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .slider-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75em;
+            opacity: 0.8;
+            margin-top: 5px;
+            color: white;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        button {
+            flex: 1;
+            padding: 12px;
+            background: rgba(74, 124, 89, 0.6);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.4);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        button:hover:not(:disabled) {
+            background: rgba(74, 124, 89, 0.8);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        button.secondary {
+            background: rgba(108, 117, 125, 0.6);
+        }
+
+        button.danger {
+            background: rgba(220, 53, 69, 0.6);
+        }
+
+        button.small {
+            padding: 6px 12px;
+            font-size: 0.85em;
+        }
+
+        /* Preview Panel */
+        .preview-content {
+            color: white;
+        }
+
+        .meditation-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 0.8em;
+            opacity: 0.8;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-weight: 600;
+        }
+
+        .meditation-text {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 12px;
+            line-height: 1.8;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-line;
+            margin-bottom: 20px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            opacity: 0.6;
+        }
+
+        .empty-state-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        /* History Section */
+        .history-section {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 25px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        .history-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .history-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
+        }
+
+        .history-details {
+            flex: 1;
+        }
+
+        .history-settings {
+            font-size: 0.85em;
+            opacity: 0.8;
+        }
+
+        .history-timestamp {
+            font-size: 0.75em;
+            opacity: 0.6;
+            margin-top: 5px;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 5px;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: white;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.2);
+            border-left: 4px solid rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        @media (max-width: 1200px) {
+            .testing-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
-    <h1>Test Page Works!</h1>
-    <p>If you see this, the server is working.</p>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Momentus Testing Dashboard</h1>
+            <p>Rapidly test meditation variations and save your favorite presets</p>
+            <p style="margin-top: 10px;"><a href="/">← Back to Main App</a></p>
+        </div>
+
+        <!-- Preset Management Bar -->
+        <div class="preset-bar">
+            <div class="preset-slot" id="preset1" onclick="loadPreset(1)">
+                <div class="preset-name">📋 Preset 1</div>
+                <div class="preset-summary">Empty - Click to save</div>
+                <div class="preset-actions">
+                    <button class="small danger" onclick="deletePreset(1, event)">Delete</button>
+                </div>
+            </div>
+            <div class="preset-slot" id="preset2" onclick="loadPreset(2)">
+                <div class="preset-name">📋 Preset 2</div>
+                <div class="preset-summary">Empty - Click to save</div>
+                <div class="preset-actions">
+                    <button class="small danger" onclick="deletePreset(2, event)">Delete</button>
+                </div>
+            </div>
+            <div class="preset-slot" id="preset3" onclick="loadPreset(3)">
+                <div class="preset-name">📋 Preset 3</div>
+                <div class="preset-summary">Empty - Click to save</div>
+                <div class="preset-actions">
+                    <button class="small danger" onclick="deletePreset(3, event)">Delete</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Testing Layout -->
+        <div class="testing-layout">
+            <!-- Settings Panel -->
+            <div class="settings-panel">
+                <h2 class="panel-title">⚙️ Settings</h2>
+
+                <div class="form-group">
+                    <label>Location</label>
+                    <input type="number" id="latitude" placeholder="Latitude" step="any">
+                    <input type="number" id="longitude" placeholder="Longitude" step="any" style="margin-top: 10px;">
+                    <button onclick="getLocation()" style="margin-top: 10px;">📍 Use My Location</button>
+                </div>
+
+                <div class="form-group">
+                    <label>Duration</label>
+                    <select id="duration">
+                        <option value="180">3 minutes</option>
+                        <option value="300" selected>5 minutes</option>
+                        <option value="600">10 minutes</option>
+                        <option value="900">15 minutes</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Mood</label>
+                    <select id="mood">
+                        <option value="calm" selected>Calm</option>
+                        <option value="energized">Energized</option>
+                        <option value="reflective">Reflective</option>
+                        <option value="peaceful">Peaceful</option>
+                        <option value="focused">Focused</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Meditation Style</label>
+                    <select id="meditationStyle">
+                        <option value="naturalist" selected>Naturalist</option>
+                        <option value="guided">Guided</option>
+                        <option value="contemplative">Contemplative</option>
+                        <option value="documentary">Documentary</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Focus Balance: <span id="focusBalanceLabel">Balanced</span></label>
+                    <input type="range" id="focusBalance" min="0" max="3" value="1" step="1" 
+                           oninput="updateFocusLabel(this.value)">
+                    <div class="slider-labels">
+                        <span>Nature</span>
+                        <span>Balanced</span>
+                        <span>Grounding</span>
+                        <span>Meditative</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Instruction Depth: <span id="instructionDepthLabel">Moderate</span></label>
+                    <input type="range" id="instructionDepth" min="0" max="2" value="1" step="1"
+                           oninput="updateInstructionLabel(this.value)">
+                    <div class="slider-labels">
+                        <span>Minimal</span>
+                        <span>Moderate</span>
+                        <span>Detailed</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Philosophical Depth: <span id="philosophicalDepthLabel">Secular</span></label>
+                    <input type="range" id="philosophicalDepth" min="0" max="2" value="0" step="1"
+                           oninput="updatePhilosophicalLabel(this.value)">
+                    <div class="slider-labels">
+                        <span>Secular</span>
+                        <span>Subtle</span>
+                        <span>Contemplative</span>
+                    </div>
+                </div>
+
+                <div class="button-group">
+                    <button onclick="generateMeditation()">🌱 Generate</button>
+                    <button class="secondary" onclick="regenerate()" id="regenBtn" disabled>🔄 Regen</button>
+                </div>
+
+                <div class="button-group">
+                    <button onclick="saveToPreset()" id="savePresetBtn" disabled>💾 Save to Preset</button>
+                </div>
+            </div>
+
+            <!-- Preview Panel -->
+            <div class="preview-panel">
+                <h2 class="panel-title">👁️ Preview</h2>
+                
+                <div id="previewContent" class="preview-content">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🧘</div>
+                        <p>Generate a meditation to see preview</p>
+                    </div>
+                </div>
+
+                <div id="loadingState" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>Generating meditation...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <div class="history-section">
+            <h2 class="panel-title">📜 Recent Tests (Last 10)</h2>
+            <div id="historyList" class="history-list">
+                <div class="empty-state">
+                    <p>No tests yet. Generate your first meditation!</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let currentMeditation = null;
+        let testHistory = JSON.parse(localStorage.getItem('momentus_test_history') || '[]');
+        let presets = JSON.parse(localStorage.getItem('momentus_presets') || '{}');
+
+        // Initialize
+        window.addEventListener('load', () => {
+            loadPresetsUI();
+            renderHistory();
+            autoDetectLocation();
+        });
+
+        // Auto-detect location
+        function autoDetectLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        document.getElementById('latitude').value = position.coords.latitude.toFixed(6);
+                        document.getElementById('longitude').value = position.coords.longitude.toFixed(6);
+                    },
+                    () => {} // Silently fail
+                );
+            }
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        document.getElementById('latitude').value = position.coords.latitude.toFixed(6);
+                        document.getElementById('longitude').value = position.coords.longitude.toFixed(6);
+                    },
+                    (error) => {
+                        alert('Unable to get location: ' + error.message);
+                    }
+                );
+            }
+        }
+
+        // Label updates
+        function updateFocusLabel(value) {
+            const labels = ['Nature-Focused', 'Balanced', 'Grounding-Focused', 'Meditative'];
+            document.getElementById('focusBalanceLabel').textContent = labels[value];
+        }
+
+        function updateInstructionLabel(value) {
+            const labels = ['Minimal', 'Moderate', 'Detailed'];
+            document.getElementById('instructionDepthLabel').textContent = labels[value];
+        }
+
+        function updatePhilosophicalLabel(value) {
+            const labels = ['Secular', 'Subtle', 'Contemplative'];
+            document.getElementById('philosophicalDepthLabel').textContent = labels[value];
+        }
+
+        // Get current settings
+        function getCurrentSettings() {
+            return {
+                latitude: parseFloat(document.getElementById('latitude').value),
+                longitude: parseFloat(document.getElementById('longitude').value),
+                duration: parseInt(document.getElementById('duration').value),
+                mood: document.getElementById('mood').value,
+                meditationStyle: document.getElementById('meditationStyle').value,
+                focusBalance: parseInt(document.getElementById('focusBalance').value),
+                instructionDepth: parseInt(document.getElementById('instructionDepth').value),
+                philosophicalDepth: parseInt(document.getElementById('philosophicalDepth').value)
+            };
+        }
+
+        // Load settings into form
+        function loadSettings(settings) {
+            document.getElementById('latitude').value = settings.latitude;
+            document.getElementById('longitude').value = settings.longitude;
+            document.getElementById('duration').value = settings.duration;
+            document.getElementById('mood').value = settings.mood;
+            document.getElementById('meditationStyle').value = settings.meditationStyle;
+            document.getElementById('focusBalance').value = settings.focusBalance;
+            document.getElementById('instructionDepth').value = settings.instructionDepth;
+            document.getElementById('philosophicalDepth').value = settings.philosophicalDepth;
+            
+            updateFocusLabel(settings.focusBalance);
+            updateInstructionLabel(settings.instructionDepth);
+            updatePhilosophicalLabel(settings.philosophicalDepth);
+        }
+
+        // Generate meditation
+        async function generateMeditation() {
+            const settings = getCurrentSettings();
+            
+            if (isNaN(settings.latitude) || isNaN(settings.longitude)) {
+                alert('Please enter valid coordinates');
+                return;
+            }
+
+            document.getElementById('loadingState').style.display = 'block';
+            document.getElementById('previewContent').innerHTML = '';
+
+            try {
+                const response = await fetch('/api/sessions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        latitude: settings.latitude,
+                        longitude: settings.longitude,
+                        preferences: {
+                            duration: settings.duration,
+                            mood: settings.mood,
+                            meditationStyle: settings.meditationStyle,
+                            focusBalance: settings.focusBalance,
+                            instructionDepth: settings.instructionDepth,
+                            philosophicalDepth: settings.philosophicalDepth
+                        }
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    currentMeditation = {
+                        session: data.session,
+                        settings: settings,
+                        timestamp: new Date().toISOString()
+                    };
+
+                    displayMeditation(data.session);
+                    addToHistory(currentMeditation);
+                    
+                    document.getElementById('regenBtn').disabled = false;
+                    document.getElementById('savePresetBtn').disabled = false;
+                } else {
+                    alert('Failed to generate meditation: ' + data.message);
+                }
+            } catch (error) {
+                alert('Network error: ' + error.message);
+            } finally {
+                document.getElementById('loadingState').style.display = 'none';
+            }
+        }
+
+        // Regenerate with same settings
+        function regenerate() {
+            if (!currentMeditation) return;
+            loadSettings(currentMeditation.settings);
+            generateMeditation();
+        }
+
+        // Display meditation
+        function displayMeditation(session) {
+            const html = `
+                <div class="meditation-info">
+                    <div class="info-item">
+                        <div class="info-label">Weather</div>
+                        <div class="info-value">${session.weather.description}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Species</div>
+                        <div class="info-value">${session.species.name}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Lunar Phase</div>
+                        <div class="info-value">${session.lunar.phase}</div>
+                    </div>
+                    <div class="info-item">
+                        <div class="info-label">Duration</div>
+                        <div class="info-value">${Math.floor(session.content.duration / 60)} min</div>
+                    </div>
+                </div>
+                <div class="meditation-text">${session.content.text}</div>
+            `;
+            
+            document.getElementById('previewContent').innerHTML = html;
+        }
+
+        // History management
+        function addToHistory(meditation) {
+            testHistory.unshift({
+                ...meditation,
+                id: Date.now()
+            });
+            
+            // Keep only last 10
+            testHistory = testHistory.slice(0, 10);
+            localStorage.setItem('momentus_test_history', JSON.stringify(testHistory));
+            renderHistory();
+        }
+
+        function renderHistory() {
+            const container = document.getElementById('historyList');
+            
+            if (testHistory.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>No tests yet. Generate your first meditation!</p></div>';
+                return;
+            }
+
+            container.innerHTML = testHistory.map((item, index) => `
+                <div class="history-item" onclick="loadFromHistory(${index})">
+                    <div class="history-details">
+                        <div class="history-settings">
+                            ${item.settings.meditationStyle} / 
+                            ${['Nature', 'Balanced', 'Grounding', 'Meditative'][item.settings.focusBalance]} / 
+                            ${['Minimal', 'Moderate', 'Detailed'][item.settings.instructionDepth]}
+                        </div>
+                        <div class="history-timestamp">${new Date(item.timestamp).toLocaleString()}</div>
+                    </div>
+                    <div class="history-actions">
+                        <button class="small" onclick="loadFromHistory(${index}); event.stopPropagation();">Load</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadFromHistory(index) {
+            const item = testHistory[index];
+            loadSettings(item.settings);
+            currentMeditation = item;
+            displayMeditation(item.session);
+            document.getElementById('regenBtn').disabled = false;
+            document.getElementById('savePresetBtn').disabled = false;
+        }
+
+        // Preset management
+        function saveToPreset() {
+            if (!currentMeditation) return;
+            
+            const slot = prompt('Save to which preset? (1, 2, or 3)');
+            if (!['1', '2', '3'].includes(slot)) {
+                alert('Please enter 1, 2, or 3');
+                return;
+            }
+
+            const name = prompt('Name this preset:', `Preset ${slot}`);
+            if (!name) return;
+
+            const emoji = prompt('Choose an emoji (optional):', '📋') || '📋';
+
+            presets[slot] = {
+                name: name,
+                emoji: emoji,
+                settings: currentMeditation.settings,
+                savedAt: new Date().toISOString()
+            };
+
+            localStorage.setItem('momentus_presets', JSON.stringify(presets));
+            loadPresetsUI();
+            alert(`Saved to Preset ${slot}!`);
+        }
+
+        function loadPreset(slot) {
+            const preset = presets[slot];
+            if (!preset) {
+                // If empty and there's a current meditation, offer to save
+                if (currentMeditation) {
+                    if (confirm('Save current settings to this preset?')) {
+                        const name = prompt('Name this preset:', `Preset ${slot}`);
+                        if (!name) return;
+                        const emoji = prompt('Choose an emoji (optional):', '📋') || '📋';
+                        presets[slot] = {
+                            name: name,
+                            emoji: emoji,
+                            settings: currentMeditation.settings,
+                            savedAt: new Date().toISOString()
+                        };
+                        localStorage.setItem('momentus_presets', JSON.stringify(presets));
+                        loadPresetsUI();
+                    }
+                }
+                return;
+            }
+
+            loadSettings(preset.settings);
+            alert(`Loaded: ${preset.name}`);
+        }
+
+        function deletePreset(slot, event) {
+            event.stopPropagation();
+            if (!confirm('Delete this preset?')) return;
+            
+            delete presets[slot];
+            localStorage.setItem('momentus_presets', JSON.stringify(presets));
+            loadPresetsUI();
+        }
+
+        function loadPresetsUI() {
+            for (let i = 1; i <= 3; i++) {
+                const slot = document.getElementById(`preset${i}`);
+                const preset = presets[i];
+                
+                if (preset) {
+                    slot.classList.add('filled');
+                    slot.querySelector('.preset-name').textContent = `${preset.emoji} ${preset.name}`;
+                    slot.querySelector('.preset-summary').textContent = 
+                        `${preset.settings.meditationStyle} / ${['Nature', 'Balanced', 'Grounding', 'Meditative'][preset.settings.focusBalance]}`;
+                } else {
+                    slot.classList.remove('filled');
+                    slot.querySelector('.preset-name').textContent = `📋 Preset ${i}`;
+                    slot.querySelector('.preset-summary').textContent = 'Empty - Click to save';
+                }
+            }
+        }
+    </script>
 </body>
 </html>
