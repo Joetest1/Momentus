@@ -79,11 +79,17 @@ app.use('/api/sessions', sessionRoutes);
 app.use('/admin', adminRoutes);
 app.use('/api/admin', adminDashboardRoutes);
 
+// 404 handler - must be AFTER static middleware so static files can be served
 app.use((req, res) => {
-  res.status(404).json({ 
-    error: 'Route not found',
-    message: 'The requested endpoint does not exist.'
-  });
+  // Only return JSON 404 for API routes, otherwise send a generic message
+  if (req.path.startsWith('/api/') || req.path.startsWith('/admin/')) {
+    res.status(404).json({ 
+      error: 'Route not found',
+      message: 'The requested endpoint does not exist.'
+    });
+  } else {
+    res.status(404).send('404 - Page not found');
+  }
 });
 
 app.use(errorHandler);
