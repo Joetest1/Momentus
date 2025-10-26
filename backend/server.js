@@ -67,6 +67,20 @@ app.get('/health', (req, res) => {
   });
 });
 
+// Debug route to list public directory files
+app.get('/debug/files', (req, res) => {
+  const fs = require('fs');
+  try {
+    const files = fs.readdirSync(path.join(__dirname, 'public'));
+    res.json({ 
+      publicPath: path.join(__dirname, 'public'),
+      files: files
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Serve static files first - use absolute paths
 const publicPath = path.join(__dirname, 'public');
 const audioPath = path.join(__dirname, 'audio');
