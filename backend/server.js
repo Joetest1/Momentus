@@ -68,8 +68,11 @@ app.get('/health', (req, res) => {
 });
 
 // Serve static files first - use absolute paths
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/audio', express.static(path.join(__dirname, 'audio')));  // Serve audio files
+const publicPath = path.join(__dirname, 'public');
+const audioPath = path.join(__dirname, 'audio');
+logger.info('Static file paths configured', { publicPath, audioPath });
+app.use(express.static(publicPath));
+app.use('/audio', express.static(audioPath));  // Serve audio files
 
 // Serve the main user interface at root (this will be handled by static middleware now)
 // app.get('/', (req, res) => {
