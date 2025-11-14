@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polar H10 Troubleshooting Guide</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .nav-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e9ecef;
+            flex-wrap: wrap;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+
+        .nav-tab:hover {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .nav-tab.active {
+            background: #007bff;
+            color: white;
+            border-bottom: 3px solid #0056b3;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .model-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-left: 5px solid #007bff;
+        }
+
+        .model-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .model-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .year-badge {
+            background: #007bff;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-current {
+            background: #28a745;
+            color: white;
+        }
+
+        .status-legacy {
+            background: #ffc107;
+            color: #212529;
+        }
+
+        .status-discontinued {
+            background: #dc3545;
+            color: white;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+
+        .feature-item {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+        }
+
+        .feature-item h4 {
+            color: #007bff;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .icon {
+            font-size: 1.2rem;
+        }
+
+        .troubleshooting-steps {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .troubleshooting-steps h4 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+
+        .steps-list {
+            list-style: none;
+            counter-reset: step-counter;
+        }
+
+        .steps-list li {
+            counter-increment: step-counter;
+            margin-bottom: 15px;
+            padding-left: 40px;
+            position: relative;
+        }
+
+        .steps-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #007bff;
+            color: white;
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            color: #856404;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .comparison-table th {
+            background: #007bff;
+            color: white;
+            font-weight: 600;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .back-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #6c757d;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            margin: 20px 0;
+        }
+
+        .back-button:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        @media (max-width: 768px) {
+            .nav-tabs {
+                flex-direction: column;
+            }
+            
+            .nav-tab {
+                min-width: auto;
+            }
+            
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .model-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Bar -->
+        <div style="background: #f8f9fa; padding: 15px; margin-bottom: 0; border-bottom: 1px solid #e9ecef;">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <a href="/" style="color: #495057; text-decoration: none; padding: 8px 16px; background: #007bff; color: white; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='#0056b3'" onmouseout="this.style.background='#007bff'">
+                        🏠 Momentus Home
+                    </a>
+                    <a href="/h10-simple-management.html" style="color: #495057; text-decoration: none; padding: 8px 16px; background: #6c757d; color: white; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='#545b62'" onmouseout="this.style.background='#6c757d'">
+                        👥 Manage Participants
+                    </a>
+                    <a href="/h10-biometric-dashboard.html" style="color: #495057; text-decoration: none; padding: 8px 16px; background: #28a745; color: white; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='#1e7e34'" onmouseout="this.style.background='#28a745'">
+                        📊 Biometric Analysis
+                    </a>
+                    <a href="/admin.html" style="color: #495057; text-decoration: none; padding: 8px 16px; background: #6c757d; color: white; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='#545b62'" onmouseout="this.style.background='#6c757d'">
+                        ⚙️ Admin
+                    </a>
+                </div>
+                <div style="color: #6c757d; font-size: 14px;">
+                    H10 Troubleshooting Guide
+                </div>
+            </div>
+        </div>
+
+        <header class="header">
+            <h1>🔍 Polar H10 Troubleshooting Guide</h1>
+            <p>Complete guide for all H10 model revisions and troubleshooting steps</p>
+        </header>
+
+        <nav class="nav-tabs">
+            <button class="nav-tab active" onclick="showTab('models')">📱 H10 Models</button>
+            <button class="nav-tab" onclick="showTab('identification')">🔍 Identify Your H10</button>
+            <button class="nav-tab" onclick="showTab('troubleshooting')">🔧 Troubleshooting</button>
+            <button class="nav-tab" onclick="showTab('connection')">🔗 Connection Guide</button>
+        </nav>
+
+        <div id="models" class="tab-content active">
+            <h2>Polar H10 Model History & Revisions</h2>
+            
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-title">Polar H10 (Original)</div>
+                    <div class="year-badge">2017-2019</div>
+                    <div class="status-badge status-discontinued">Discontinued</div>
+                </div>
+                
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <h4><span class="icon">🔘</span> Physical Button</h4>
+                        <p>Single button on the back/side of device. Press to activate and see LED status.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4><span class="icon">💡</span> LED Indicator</h4>
+                        <p>Small LED light next to button. Blue for normal operation, red for low battery.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4><span class="icon">🔄</span> Twist-Open Case</h4>
+                        <p>Back cover twists counterclockwise to open for battery replacement (CR2025).</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4><span class="icon">🔋</span> Battery Life</h4>
+                        <p>~400 hours of use. Manual power on/off with button press.</p>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Note:</strong> This is the model most online guides reference, but it's no longer manufactured.
+                </div>
+            </div>
+
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-title">Polar H10 (Gen 2)</div>
+                    <div class="year-badge">2020-2022</div>
+                    <div class="status-badge status-legacy">Legacy</div>
+                </div>
+                
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <h4><span class="icon">🚫</span> No Physical Button</h4>
+                        <p>Automatic activation when worn. No manual power button.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4><span class="icon">🔍</span> Minimal LED</h4>
+                        <p>Very small LED indicator, often difficult to see. May only flash briefly during pairing.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4><span class="icon">🔧</span> Pry-Open Case</h4>
+                        <p>Case requires careful prying with thin tool (plastic card/small screwdriver). No twist mechanism.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4><span class="icon">⚡</span> Auto Power Management</h4>
+                        <p>Automatically powers on when detecting heart rate, powers off when removed.</p>
+                    </div>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>Important:</strong> This model is much more sensitive to proper electrode contact and positioning.
+                </div>
+            </div>
+
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-title">Polar H10 (Current)</div>
+                    <div class="year-badge">2023-Present</div>
+                    <div class="status-badge status-current">Current</div>
+                </div>
+                
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <h4><span class="icon">🎯</span> Smart Activation</h4>
+                        <p>Advanced auto-detection. Powers on with proper chest strap contact.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4><span class="icon">📶</span> Improved Connectivity</h4>
+                        <p>Enhanced Bluetooth 5.0+ with better pairing and connection stability.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4><span class="icon">🔧</span> Tool-Free Opening</h4>
+                        <p>Improved case design with easier battery access. Still requires prying but with better access points.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4><span class="icon">🔋</span> Extended Battery</h4>
+                        <p>Optimized power management for longer battery life (~400+ hours).</p>
+                    </div>
+                </div>
+
+                <div class="alert alert-info">
+                    <strong>Web Bluetooth Compatible:</strong> This model works best with our browser-based heart rate monitoring system.
+                </div>
+            </div>
+        </div>
+
+        <div id="identification" class="tab-content">
+            <h2>How to Identify Your H10 Model</h2>
+
+            <div class="comparison-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Original (2017-2019)</th>
+                            <th>Gen 2 (2020-2022)</th>
+                            <th>Current (2023+)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>Physical Button</strong></td>
+                            <td>✅ Yes, clearly visible</td>
+                            <td>❌ No button</td>
+                            <td>❌ No button</td>
+                        </tr>
+                        <tr>
+                            <td><strong>LED Indicator</strong></td>
+                            <td>✅ Bright, easy to see</td>
+                            <td>⚠️ Very dim/minimal</td>
+                            <td>⚠️ Subtle, brief flashes</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Case Opening</strong></td>
+                            <td>🔄 Twist counterclockwise</td>
+                            <td>🔧 Pry open carefully</td>
+                            <td>🔧 Pry with better access</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Power Activation</strong></td>
+                            <td>Manual button press</td>
+                            <td>Automatic when worn</td>
+                            <td>Smart auto-detection</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Firmware Version</strong></td>
+                            <td>1.x.x - 2.x.x</td>
+                            <td>3.x.x - 4.x.x</td>
+                            <td>5.x.x+</td>
+                        </tr>
+                        <tr>
+                            <td><strong>Model Number</strong></td>
+                            <td>92061851</td>
+                            <td>92062007</td>
+                            <td>92062118+</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="troubleshooting-steps">
+                <h4>🔍 Quick Identification Steps</h4>
+                <ol class="steps-list">
+                    <li><strong>Look for a button:</strong> If you see a clear button, you have the original model.</li>
+                    <li><strong>Check the case:</strong> Try gently twisting the back. If it moves, it's the original.</li>
+                    <li><strong>Look for model numbers:</strong> Small print on the device or inside the battery compartment.</li>
+                    <li><strong>Test activation:</strong> Put on chest strap with damp electrodes and wait 30 seconds.</li>
+                    <li><strong>Check manufacturing date:</strong> Often printed inside battery compartment.</li>
+                </ol>
+            </div>
+
+            <div class="alert alert-info">
+                <strong>Still not sure?</strong> The Polar Beat app can show firmware version and model details when connected.
+            </div>
+        </div>
+
+        <div id="troubleshooting" class="tab-content">
+            <h2>Model-Specific Troubleshooting</h2>
+
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-title">Original H10 (2017-2019) Troubleshooting</div>
+                </div>
+                
+                <div class="troubleshooting-steps">
+                    <h4>🔋 Power & Battery Issues</h4>
+                    <ol class="steps-list">
+                        <li><strong>Press the button:</strong> Hold for 2-3 seconds, look for LED response.</li>
+                        <li><strong>Check battery:</strong> Twist open case, ensure CR2025 is properly seated.</li>
+                        <li><strong>Clean contacts:</strong> Use dry cloth to clean battery contacts if corroded.</li>
+                        <li><strong>Factory reset:</strong> Hold button for 10+ seconds, release, then press briefly.</li>
+                        <li><strong>Replace battery:</strong> Even if LED works, battery may be weak.</li>
+                    </ol>
+                </div>
+
+                <div class="alert alert-warning">
+                    <strong>LED Colors:</strong> Blue = normal, Red = low battery, No light = dead/defective.
+                </div>
+            </div>
+
+            <div class="model-card">
+                <div class="model-header">
+                    <div class="model-title">Gen 2 & Current H10 (2020+) Troubleshooting</div>
+                </div>
+                
+                <div class="troubleshooting-steps">
+                    <h4>⚙️ Auto-Activation Troubleshooting</h4>
+                    <ol class="steps-list">
+                        <li><strong>Proper chest strap placement:</strong> Position just below chest muscles, not on ribs.</li>
+                        <li><strong>Wet the electrodes:</strong> Use water or electrode gel for better contact.</li>
+                        <li><strong>Wait for activation:</strong> Can take 30-60 seconds to auto-detect heart rate.</li>
+                        <li><strong>Check for LED:</strong> Very brief flash during startup (easy to miss).</li>
+                        <li><strong>Test with phone app:</strong> Use Polar Beat to confirm device is working.</li>
+                        <li><strong>Battery replacement:</strong> Carefully pry open case with plastic tool.</li>
+                    </ol>
+                </div>
+
+                <div class="troubleshooting-steps">
+                    <h4>🔧 Battery Replacement for Newer Models</h4>
+                    <ol class="steps-list">
+                        <li><strong>Use plastic tool:</strong> Credit card, plastic prying tool, or small flat screwdriver.</li>
+                        <li><strong>Find the seam:</strong> Look for small gap around the edge of the back case.</li>
+                        <li><strong>Gentle pressure:</strong> Insert tool and carefully pry around the perimeter.</li>
+                        <li><strong>Don't force:</strong> If it doesn't open easily, try different spots around the edge.</li>
+                        <li><strong>Replace CR2025:</strong> Ensure "+" side faces up, press firmly to seat.</li>
+                        <li><strong>Press case closed:</strong> Should click back into place securely.</li>
+                    </ol>
+                </div>
+
+                <div class="alert alert-danger">
+                    <strong>Warning:</strong> Excessive force can crack the case. If battery replacement fails, the device may need professional service or replacement.
+                </div>
+            </div>
+
+            <div class="troubleshooting-steps">
+                <h4>🌐 General Connection Issues (All Models)</h4>
+                <ol class="steps-list">
+                    <li><strong>Browser compatibility:</strong> Use Chrome or Edge (Safari/Firefox have limited Web Bluetooth).</li>
+                    <li><strong>Distance:</strong> Stay within 10 meters of your computer.</li>
+                    <li><strong>Interference:</strong> Turn off other heart rate monitors and Bluetooth devices.</li>
+                    <li><strong>Clear pairing:</strong> Forget device in browser/phone Bluetooth settings and re-pair.</li>
+                    <li><strong>Restart browser:</strong> Close all tabs and restart Chrome/Edge completely.</li>
+                    <li><strong>Check permissions:</strong> Ensure browser has Bluetooth permissions enabled.</li>
+                </ol>
+            </div>
+        </div>
+
+        <div id="connection" class="tab-content">
+            <h2>Web Bluetooth Connection Guide</h2>
+
+            <div class="alert alert-info">
+                <strong>Browser Requirements:</strong> Chrome 56+, Edge 79+, or Chromium-based browsers. HTTPS required for production (localhost works for development).
+            </div>
+
+            <div class="troubleshooting-steps">
+                <h4>🔗 Step-by-Step Connection Process</h4>
+                <ol class="steps-list">
+                    <li><strong>Prepare H10:</strong> Ensure device is powered on (wear chest strap with damp electrodes).</li>
+                    <li><strong>Open management page:</strong> Navigate to <code>http://localhost:3000/h10-management.html</code></li>
+                    <li><strong>Click scan button:</strong> "📡 Scan for H10 Devices" - browser popup should appear.</li>
+                    <li><strong>Select H10:</strong> Look for "H10 xxxxxxxxx" or "Polar H10 xxxxxxxxx" in device list.</li>
+                    <li><strong>Pair device:</strong> Click your H10 and then "Pair" in the browser dialog.</li>
+                    <li><strong>Test connection:</strong> Click "🔍 Test Connection" to verify heart rate data.</li>
+                    <li><strong>Start session:</strong> Use "▶️ Start Session" for live meditation with HR monitoring.</li>
+                </ol>
+            </div>
+
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <h4><span class="icon">✅</span> Connection Success Signs</h4>
+                    <ul>
+                        <li>Device appears in scan results</li>
+                        <li>Pairing completes without error</li>
+                        <li>Heart rate values display in real-time</li>
+                        <li>Connection status shows "Connected"</li>
+                    </ul>
+                </div>
+                <div class="feature-item">
+                    <h4><span class="icon">❌</span> Common Connection Issues</h4>
+                    <ul>
+                        <li>No devices found in scan</li>
+                        <li>Pairing fails or times out</li>
+                        <li>Heart rate shows as 0 or undefined</li>
+                        <li>Connection drops frequently</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="troubleshooting-steps">
+                <h4>🛠️ Advanced Troubleshooting</h4>
+                <ol class="steps-list">
+                    <li><strong>Enable Web Bluetooth flags:</strong> 
+                        <br>Chrome: <code>chrome://flags/#enable-web-bluetooth</code>
+                        <br>Edge: <code>edge://flags/#enable-web-bluetooth</code>
+                    </li>
+                    <li><strong>Check browser console:</strong> Press F12 → Console tab for error messages.</li>
+                    <li><strong>Clear browser data:</strong> Clear cookies/storage for localhost.</li>
+                    <li><strong>Test with Polar Beat:</strong> Verify H10 works with official Polar app first.</li>
+                    <li><strong>Reset H10:</strong> For newer models, remove and re-insert battery.</li>
+                    <li><strong>Try different H10:</strong> Test with another H10 device if available.</li>
+                </ol>
+            </div>
+
+            <div class="alert alert-warning">
+                <strong>Production Note:</strong> For live deployment with participants, you'll need HTTPS (SSL certificate). Web Bluetooth doesn't work on HTTP in production environments.
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center; padding: 20px;">
+        <a href="/h10-management.html" class="back-button">
+            ← Back to H10 Management
+        </a>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.nav-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked tab
+            event.target.classList.add('active');
+        }
+
+        // Add smooth scrolling for better UX
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers for internal links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

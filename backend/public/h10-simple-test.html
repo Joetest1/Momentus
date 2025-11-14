@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>H10 Simple Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .form-group { margin: 15px 0; }
+        label { display: block; margin-bottom: 5px; font-weight: bold; }
+        input { padding: 8px; width: 200px; border: 1px solid #ccc; border-radius: 4px; }
+        button { padding: 10px 20px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background: #0056b3; }
+        .participants { margin-top: 30px; }
+        .participant-card { border: 1px solid #ddd; padding: 15px; margin: 10px 0; border-radius: 8px; background: #f9f9f9; }
+        .alert { padding: 10px; margin: 10px 0; border-radius: 4px; }
+        .alert-success { background: #d4edda; border: 1px solid #c3e6cb; color: #155724; }
+        .alert-error { background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+    </style>
+</head>
+<body>
+    <h1>🫀 H10 Simple Participant Test</h1>
+    
+    <div id="alerts"></div>
+    
+    <div class="form-group">
+        <label for="participant-id">Participant ID (3 characters):</label>
+        <input type="text" id="participant-id" maxlength="3" placeholder="ABC">
+    </div>
+    
+    <div class="form-group">
+        <label for="participant-name">Name:</label>
+        <input type="text" id="participant-name" placeholder="John Doe">
+    </div>
+    
+    <div class="form-group">
+        <label for="device-id">H10 Device ID:</label>
+        <input type="text" id="device-id" placeholder="H10-12345678">
+    </div>
+    
+    <div class="form-group">
+        <label for="participant-email">Email (optional):</label>
+        <input type="email" id="participant-email" placeholder="john@example.com">
+    </div>
+    
+    <button onclick="addParticipant()">Add Participant</button>
+    <button onclick="loadParticipants()">Refresh List</button>
+    <button onclick="clearAll()">Clear All</button>
+    
+    <div class="participants">
+        <h2>Registered Participants</h2>
+        <div id="participants-list">No participants yet</div>
+    </div>
+
+    <script>
+        let participants = [];
+
+        function showAlert(message, type = 'success') {
+            const alertsContainer = document.getElementById('alerts');
+            const alertClass = type === 'error' ? 'alert-error' : 'alert-success';
+            
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert ${alertClass}`;
+            alertDiv.textContent = message;
+            
+            alertsContainer.appendChild(alertDiv);
+            
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 3000);
+        }
+
+        function addParticipant() {
+            console.log('🔄 Adding participant...');
+            
+            const id = document.getElementById('participant-id').value.trim().toUpperCase();
+            const name = document.getElementById('participant-name').value.trim();
+            const deviceId = document.getElementById('device-id').value.trim();
+            const email = document.getElementById('participant-email').value.trim();
+            
+            // Validation
+            if (!id || id.length !== 3) {
+                showAlert('Please enter a 3-character participant ID', 'error');
+                return;
+            }
+            
+            if (!name) {
+                showAlert('Please enter participant name', 'error');
+                return;
+            }
+            
+            if (!deviceId) {
+                showAlert('Please enter H10 device ID', 'error');
+                return;
+            }
+            
+            // Check for duplicate
+            if (participants.find(p => p.id === id)) {
+                showAlert(`Participant ID "${id}" already exists`, 'error');
+                return;
+            }
+            
+            // Create participant
+            const participant = {
+                id: id,
+                name: name,
+                deviceId: deviceId,
+                email: email || '',
+                addedAt: new Date().toISOString(),
+                connected: false,
+                totalSessions: 0,
+                lastSessionDate: null,
+                lastHeartRate: null,
+                lastSeen: null,
+                activeSessionId: null
+            };
+            
+            // Add to array
+            participants.push(participant);
+            
+            // Save to localStorage
+            try {
+                localStorage.setItem('h10_participants', JSON.stringify(participants));
+                console.log('✅ Participant saved to localStorage');
+                showAlert(`Participant ${name} (${id}) added successfully!`);
+                
+                // Clear form
+                document.getElementById('participant-id').value = '';
+                document.getElementById('participant-name').value = '';
+                document.getElementById('device-id').value = '';
+                document.getElementById('participant-email').value = '';
+                
+                // Refresh display
+                renderParticipants();
+                
+            } catch (error) {
+                console.error('❌ Error saving participant:', error);
+                showAlert('Error saving participant: ' + error.message, 'error');
+            }
+        }
+
+        function loadParticipants() {
+            console.log('📂 Loading participants from localStorage...');
+            
+            try {
+                const stored = localStorage.getItem('h10_participants');
+                if (stored) {
+                    participants = JSON.parse(stored);
+                    console.log('✅ Loaded', participants.length, 'participants');
+                    showAlert(`Loaded ${participants.length} participants`);
+                } else {
+                    participants = [];
+                    console.log('📝 No stored participants found');
+                    showAlert('No stored participants found');
+                }
+                renderParticipants();
+            } catch (error) {
+                console.error('❌ Error loading participants:', error);
+                showAlert('Error loading participants: ' + error.message, 'error');
+            }
+        }
+
+        function renderParticipants() {
+            console.log('🎨 Rendering', participants.length, 'participants');
+            
+            const container = document.getElementById('participants-list');
+            
+            if (participants.length === 0) {
+                container.innerHTML = '<p>No participants registered yet</p>';
+                return;
+            }
+            
+            let html = '';
+            participants.forEach(participant => {
+                html += '<div class="participant-card">';
+                html += '<h4>' + participant.name + ' (' + participant.id + ')</h4>';
+                html += '<p><strong>Device:</strong> ' + participant.deviceId + '</p>';
+                if (participant.email) {
+                    html += '<p><strong>Email:</strong> ' + participant.email + '</p>';
+                }
+                html += '<p><strong>Added:</strong> ' + new Date(participant.addedAt).toLocaleDateString() + '</p>';
+                html += '<p><strong>Status:</strong> ' + (participant.connected ? 'Connected' : 'Not connected') + '</p>';
+                html += '<button onclick="removeParticipant(\'' + participant.id + '\')">Remove</button>';
+                html += '</div>';
+            });
+            
+            container.innerHTML = html;
+            console.log('✅ Participants rendered successfully');
+        }
+
+        function removeParticipant(id) {
+            if (confirm('Remove this participant?')) {
+                participants = participants.filter(p => p.id !== id);
+                localStorage.setItem('h10_participants', JSON.stringify(participants));
+                renderParticipants();
+                showAlert('Participant removed');
+            }
+        }
+
+        function clearAll() {
+            if (confirm('Clear all participants? This cannot be undone.')) {
+                participants = [];
+                localStorage.removeItem('h10_participants');
+                localStorage.removeItem('h10_sessions');
+                renderParticipants();
+                showAlert('All data cleared');
+            }
+        }
+
+        // Load participants on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Simple H10 test page loaded');
+            loadParticipants();
+        });
+    </script>
+</body>
+</html>

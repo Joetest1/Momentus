@@ -350,6 +350,60 @@ router.post('/test-meditation', async (req, res, next) => {
   }
 });
 
+// Generate entrainment-based meditation
+router.post('/generate-entrainment', async (req, res, next) => {
+  try {
+    const {
+      theme,
+      duration = 600,
+      intensity = 'moderate',
+      latitude,
+      longitude,
+      generateAudio = false
+    } = req.body;
+
+    if (!theme) {
+      return res.status(400).json({
+        success: false,
+        error: 'Theme is required'
+      });
+    }
+
+    // Get entrainment meditation service instance
+    const { getInstance: getEntrainmentService } = require('../services/EntrainmentMeditationService');
+    const entrainmentService = getEntrainmentService();
+
+    // Generate the meditation
+    const result = await entrainmentService.generateMeditation({
+      theme,
+      duration,
+      intensity,
+      latitude,
+      longitude,
+      generateAudio
+    });
+
+    logger.info('Entrainment meditation generated via admin dashboard', { 
+      theme, 
+      duration, 
+      intensity, 
+      hasLocation: !!(latitude && longitude),
+      generateAudio 
+    });
+
+    res.json({
+      success: true,
+      meditation: result.meditation,
+      metadata: result.metadata,
+      audioUrl: result.audioUrl || null
+    });
+
+  } catch (error) {
+    logger.error('Error generating entrainment meditation', { error: error.message });
+    next(error);
+  }
+});
+
 // Get available API combinations
 router.get('/api-combinations', async (req, res, next) => {
   try {

@@ -1,0 +1,39 @@
+MOCK AUDIO FILE
+Generated: 2025-11-10T19:02:19.160Z
+Session: entrainment-marine-1762801339160
+Text Length: 2442 characters
+Voice: en-GB-RyanNeural (British Documentary Style)
+
+MEDITATION CONTENT:
+Here is a 4-minute guided meditation focused on natural entrainment and synchronization patterns, specifically marine rhythms:
+
+Opening (1-2 minutes)
+Begin by settling into a comfortable position. Allow your eyes to gently close or soften your gaze. Take a few deep breaths, feeling the rise and fall of your belly. 
+
+As you breathe, imagine the rhythmic ebb and flow of the ocean tides. Just as the tides are synchronized with the lunar cycle, your body has an innate tidal clock, attuned to the gravitational influences all around you. 
+
+With each inhalation, imagine the tide rushing in. With each exhalation, the tide gently receding. Allow your breath to synchronize with this natural marine rhythm.
+
+Core Practice (1 minute)
+Focus your attention on the movement of your breath, noticing how it naturally synchronizes with the tidal motions. Sense the water's pull, just as crabs and other marine life can anticipate the changing tides. 
+
+Envision the delicate dance of organisms across the ocean, all entrained to the same cyclical patterns. Just as coral reefs spawn in perfect synchronization, your body is part of a vast network of coupled oscillators, naturally attuning to universal rhythms.
+
+Deepening (1 minute)
+Expand your awareness beyond your individual breath, sensing the interconnected web of life in the ocean. Imagine the internal tidal clocks of mollusks, the sea turtles following lunar cycles, the schools of fish moving with the ocean currents.
+
+All of these organisms are exquisitely synchronized, their biological processes entrained to the fluctuating temperatures, gravitational forces, and seasonal changes of the marine environment. Sense how your own rhythms are part of this intricate tapestry.
+
+Integration (1-2 minutes)
+As you continue to breathe with the tides, allow this sense of natural synchronization to permeate your entire being. Recognize that the cycles and patterns you observe in the ocean are mirrored within you - in your heart rate, your hormonal fluctuations, your very cells.
+
+Just as the crashing waves and swirling currents flow with an innate intelligence, so too does your body possess an inherent wisdom, constantly attuning to the rhythms that sustain all life. 
+
+Closing
+When you're ready, gently open your eyes, carrying this expanded awareness of marine rhythms with you. Allow the synchronization you've experienced to guide and inspire you in the ebb and flow of your daily life.
+
+[This is a development placeholder. To enable real TTS audio:
+1. Get Azure Cognitive Services TTS API key
+2. Add AZURE_TTS_API_KEY=your_key to .env
+3. Add AZURE_TTS_REGION=eastus to .env
+4. Restart server]

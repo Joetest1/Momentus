@@ -1,0 +1,51 @@
+MOCK AUDIO FILE - DEVELOPMENT MODE
+Generated: 2025-11-10T19:49:30.879Z
+Session: entrainment-movement-1762804170878
+Text Length: 3238 characters
+Estimated Duration: 248 seconds (4 minutes)
+Voice: en-GB-RyanNeural (British Documentary Style)
+
+AUDIO EXPERIENCE:
+The WAV file contains 248 seconds of silence as a placeholder.
+In production with Azure TTS, this would be a full spoken meditation
+with natural British male voice, documentary-style pacing, and proper
+meditation pauses and breathing spaces.
+
+MEDITATION CONTENT THAT WOULD BE SPOKEN:
+Here is a 10-minute guided meditation focused on natural entrainment and synchronization patterns, specifically movement rhythms:
+
+OPENING (1-2 minutes)
+Begin by settling into a comfortable seated position. Close your eyes and bring your attention inward, noticing the natural rhythm of your breath moving in and out. Feel the gentle rise and fall of your belly as you breathe. 
+
+Now imagine yourself in a vast open landscape, surrounded by a flock of birds in flight. Observe how the birds move as a single, coordinated entity, their wings flapping in sync, their bodies effortlessly turning and banking together. This is the power of entrainment - how individual parts naturally fall into synchronized motion through local interaction rules.
+
+In this same way, your own breath and body rhythms are part of a greater dance of interconnected natural cycles. Your personal oscillations are coupled to the larger movements all around you.
+
+CORE PRACTICE (7 minutes)
+As you continue to breathe naturally, begin to attune your awareness to the movement of the birds. Imagine you can feel the collective momentum of the flock, each bird subtly matching the velocity and direction of its neighbors. Notice how the shared motion emerges from simple rules of local interaction - each bird responding to the movements of those closest to it.
+
+Now bring this awareness inward. Sense how your own breath is moving in a coordinated flow, your inhalations and exhalations seamlessly linked. Envision your breath as a miniature flock, the individual breaths aligning into a unified current.
+
+Expand your attention to include the whole body. Feel how your limbs and torso are gently swaying, rocking, or shifting in a rhythmic dance. Allow your awareness to become increasingly refined, noticing the most subtle tremors, sways and adjustments as your body naturally entrains to internal and external movement patterns.
+
+Imagine you can feel the complex web of feedback mechanisms maintaining this delicate synchronization - micro-adjustments cascading through your system, individual parts constantly calibrating to the whole.
+
+DEEPENING
+Now broaden your awareness to include the wider environment. Sense how your body is embedded within a living, breathing landscape - the air currents, the ground beneath you, the distant horizon. Recognize that your personal rhythms are entrained to these larger cycles of motion, your movements subtly mirroring the tides, the weather patterns, the planetary orbits.
+
+You are part of a vast, interconnected dance of synchronized oscillation. Your breath, your steps, your heartbeat all resonate with the fundamental frequencies that animate the natural world.
+
+INTEGRATION (1-2 minutes)
+As you prepare to return your awareness to the present moment, carry this sense of natural entrainment with you. Know that you are always in motion, your personal rhythms interwoven with the greater currents of life. 
+
+Breathe deeply, allowing this integrated awareness to infuse your being. When you are ready, slowly open your eyes, bringing this synchronized consciousness into your daily activities.
+
+CLOSING
+The world is alive with synchronized movement - may you continue to sense the shared rhythms that unite all things.
+
+[TO ENABLE REAL TTS AUDIO:
+1. Get Azure Cognitive Services TTS API key from Microsoft Azure
+2. Add AZURE_TTS_API_KEY=your_key to .env file
+3. Add AZURE_TTS_REGION=eastus to .env file  
+4. Restart server
+5. The same meditation will then generate with full voice narration]

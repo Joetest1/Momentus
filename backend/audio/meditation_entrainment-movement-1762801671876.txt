@@ -1,0 +1,39 @@
+MOCK AUDIO FILE
+Generated: 2025-11-10T19:07:51.876Z
+Session: entrainment-movement-1762801671876
+Text Length: 3640 characters
+Voice: en-GB-RyanNeural (British Documentary Style)
+
+MEDITATION CONTENT:
+Here is a 10-minute guided meditation on natural movement rhythms and entrainment patterns:
+
+Opening (1-2 minutes)
+Begin by finding a comfortable seated position, allowing your back to be upright and your body to be at ease. Close your eyes and bring your attention inward. Begin to notice the gentle rhythm of your breath - the natural ebb and flow as air moves in and out of your body. With each inhale, feel a subtle lift and expansion. With each exhale, sense a gentle letting go. 
+
+As you continue to breathe, become aware of the subtle movements within. Notice how your chest and abdomen rise and fall in a coordinated dance. Observe how your breath seems to find a natural cadence, an innate synchronization. This is the principle of entrainment - how interconnected systems naturally align their rhythms when the coupling between them is strong enough.
+
+Core Practice (7 minutes)
+Now, shift your attention to the world around you. Visualize a flock of birds soaring through the sky. Picture their wings flapping in unison, their bodies turning as one. Though each bird is an individual, they move together as a harmonious collective, coordinating their flight through a set of simple local rules. 
+
+Imagine you are one of those birds, feeling the breeze lift your wings as you glide effortlessly. Notice how your movements seamlessly integrate with those of the birds around you. You can sense the subtle shifts in velocity and direction as the group responds to environmental cues. There is a palpable feeling of connection, of being part of a greater whole.
+
+As you observe the fluid dance of the flock, bring your awareness back to your own body. Breathe in time with the birds, allowing your movements to entrain with theirs. Feel your limbs lighten, your torso sway, as you synchronize with the collective motion. Dwell in this state of unified flow, where individual and collective rhythms merge.
+
+Deepening (1-2 minutes)
+Expand your awareness to encompass the larger systems at play. Recognize how the birds' flocking behavior emerges from simple rules of local interaction - velocity matching, directional alignment, and avoidance of collisions. These decentralized, self-organizing principles give rise to the complex, harmonious patterns you observe.
+
+Sense how this principle of emergent coordination applies not just to birds, but to all manner of natural phenomena. Schooling fish, swarming insects, migrating herds - all demonstrate the power of coupled oscillators to synchronize when the coupling is strong enough. Even the rhythmic pulsing of fireflies or the synchronized flashing of neurons in your brain follow these universal laws of entrainment.
+
+Integration (1-2 minutes)
+As you gradually return your focus to your own body, remember that you, too, are part of these grand, interconnected rhythms. Your breath, your heartbeat, your movements - all are expressions of the universal principle of synchronization. You are not separate from the natural world, but an integral part of its harmonious dance.
+
+Carry this awareness with you as you transition back into your daily life. Notice how your steps begin to align with the rhythm of your surroundings, how your energy ebbs and flows in concert with the world around you. Embrace the feeling of being a fluid, dynamic part of the greater whole, moving in effortless coordination with all that is.
+
+Closing
+Gently open your eyes, feeling refreshed and aligned. Take a moment to appreciate the natural rhythms that flow through you and all of life. When you are ready, return your attention to the present moment, carrying the essence of this practice with you.
+
+[This is a development placeholder. To enable real TTS audio:
+1. Get Azure Cognitive Services TTS API key
+2. Add AZURE_TTS_API_KEY=your_key to .env
+3. Add AZURE_TTS_REGION=eastus to .env
+4. Restart server]

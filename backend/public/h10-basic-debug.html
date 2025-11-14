@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>H10 Basic Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        input { padding: 8px; margin: 5px; width: 150px; }
+        #log { background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 4px; font-family: monospace; height: 300px; overflow-y: auto; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <h1>🔍 H10 Basic Debug Test</h1>
+
+    <div class="test">
+        <h3>1. Console Test</h3>
+        <button onclick="testConsole()">Test Console</button>
+        <p>Check browser console (F12) for messages</p>
+    </div>
+
+    <div class="test">
+        <h3>2. localStorage Test</h3>
+        <button onclick="testLocalStorage()">Test localStorage</button>
+        <button onclick="clearStorage()">Clear Storage</button>
+        <button onclick="viewStorage()">View Storage</button>
+    </div>
+
+    <div class="test">
+        <h3>3. Simple Add Test</h3>
+        <input type="text" id="test-name" placeholder="Name" value="Test User">
+        <button onclick="simpleAdd()">Add Simple</button>
+        <div id="simple-result"></div>
+    </div>
+
+    <div class="test">
+        <h3>4. Debug Log</h3>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            console.log(message);
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += timestamp + ': ' + message + '<br>';
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function testConsole() {
+            log('🔍 Testing console...');
+            console.log('Console test message');
+            console.error('Test error message');
+            console.warn('Test warning message');
+            alert('Console test complete - check F12 console');
+        }
+
+        function testLocalStorage() {
+            log('💾 Testing localStorage...');
+            
+            try {
+                // Test basic operations
+                localStorage.setItem('test_key', 'test_value');
+                const value = localStorage.getItem('test_key');
+                
+                if (value === 'test_value') {
+                    log('✅ localStorage working - basic test passed');
+                } else {
+                    log('❌ localStorage failed - got: ' + value);
+                }
+                
+                // Test JSON
+                const testObj = { name: 'Test', id: 'TST', time: new Date().toISOString() };
+                localStorage.setItem('test_json', JSON.stringify(testObj));
+                const retrieved = JSON.parse(localStorage.getItem('test_json'));
+                
+                if (retrieved.name === 'Test') {
+                    log('✅ localStorage JSON test passed');
+                } else {
+                    log('❌ localStorage JSON test failed');
+                }
+                
+                localStorage.removeItem('test_key');
+                localStorage.removeItem('test_json');
+                
+            } catch (error) {
+                log('❌ localStorage error: ' + error.message);
+                console.error('localStorage error:', error);
+            }
+        }
+
+        function clearStorage() {
+            log('🧹 Clearing all H10 storage...');
+            localStorage.removeItem('h10_participants');
+            localStorage.removeItem('h10_sessions');
+            log('✅ Storage cleared');
+        }
+
+        function viewStorage() {
+            log('👀 Viewing H10 storage...');
+            
+            const participants = localStorage.getItem('h10_participants');
+            const sessions = localStorage.getItem('h10_sessions');
+            
+            log('Participants: ' + (participants || 'null'));
+            log('Sessions: ' + (sessions || 'null'));
+            
+            if (participants) {
+                try {
+                    const parsed = JSON.parse(participants);
+                    log('Parsed participants count: ' + parsed.length);
+                } catch (e) {
+                    log('❌ Error parsing participants: ' + e.message);
+                }
+            }
+        }
+
+        function simpleAdd() {
+            log('➕ Testing simple add...');
+            
+            const name = document.getElementById('test-name').value || 'Default User';
+            log('Adding participant: ' + name);
+            
+            try {
+                // Create participant
+                const participant = {
+                    id: 'TST',
+                    name: name,
+                    deviceId: 'test-device-123',
+                    addedAt: new Date().toISOString()
+                };
+                
+                log('Created participant object: ' + JSON.stringify(participant));
+                
+                // Get existing or create new array
+                let participants = [];
+                const existing = localStorage.getItem('h10_participants');
+                if (existing) {
+                    participants = JSON.parse(existing);
+                    log('Found existing participants: ' + participants.length);
+                }
+                
+                // Remove any existing test participant
+                participants = participants.filter(p => p.id !== 'TST');
+                
+                // Add new participant
+                participants.push(participant);
+                log('New participants array length: ' + participants.length);
+                
+                // Save to localStorage
+                localStorage.setItem('h10_participants', JSON.stringify(participants));
+                log('✅ Saved to localStorage');
+                
+                // Verify save
+                const verification = localStorage.getItem('h10_participants');
+                const verified = JSON.parse(verification);
+                log('Verification - stored count: ' + verified.length);
+                
+                // Update display
+                document.getElementById('simple-result').innerHTML = 
+                    '<p style="color: green;">✅ Added: ' + name + ' (TST)</p>' +
+                    '<p>Total participants: ' + verified.length + '</p>';
+                
+            } catch (error) {
+                log('❌ Error in simpleAdd: ' + error.message);
+                console.error('simpleAdd error:', error);
+                document.getElementById('simple-result').innerHTML = 
+                    '<p style="color: red;">❌ Error: ' + error.message + '</p>';
+            }
+        }
+
+        // Auto-run tests on load
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 H10 Basic Debug loaded');
+            log('Page URL: ' + window.location.href);
+            log('localStorage available: ' + (typeof Storage !== 'undefined'));
+            
+            // Auto-test localStorage
+            setTimeout(testLocalStorage, 500);
+        });
+
+        // Log any JavaScript errors
+        window.addEventListener('error', function(e) {
+            log('❌ JavaScript Error: ' + e.message + ' at ' + e.filename + ':' + e.lineno);
+            console.error('Page error:', e);
+        });
+    </script>
+</body>
+</html>

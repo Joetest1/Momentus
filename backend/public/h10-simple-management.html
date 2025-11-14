@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H10 Participants - Simple Version</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #4a5568;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+        }
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        .btn-danger:hover {
+            background: #e53e3e;
+        }
+        .participant-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            background: #f7fafc;
+            transition: all 0.3s;
+        }
+        .participant-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+        .empty-icon {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        .alert {
+            padding: 15px;
+            margin: 15px 0;
+            border-radius: 8px;
+            font-weight: 500;
+        }
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+        .alert-error {
+            background: #fed7d7;
+            color: #742a2a;
+            border: 1px solid #fc8181;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .stat-card {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+        }
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #667eea;
+        }
+        .stat-label {
+            color: #718096;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Bar -->
+        <div style="background: rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 15px; margin-bottom: 20px; backdrop-filter: blur(10px);">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <a href="/" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.2); border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                        🏠 Momentus Home
+                    </a>
+                    <a href="/h10-biometric-dashboard.html" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                        📊 Biometric Analysis
+                    </a>
+                    <a href="/admin.html" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                        ⚙️ Admin
+                    </a>
+                </div>
+                <div style="color: rgba(255,255,255,0.8); font-size: 14px;">
+                    H10 Participant Management
+                </div>
+            </div>
+        </div>
+
+        <h1 style="text-align: center; color: white; margin-bottom: 30px; font-size: 2.5em;">
+            🫀 H10 Heart Rate Monitor Management
+        </h1>
+
+        <!-- Stats Cards -->
+        <div class="card">
+            <h2>📊 Dashboard</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-participants">0</div>
+                    <div class="stat-label">Total Participants</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="connected-devices">0</div>
+                    <div class="stat-label">Connected Devices</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="active-sessions">0</div>
+                    <div class="stat-label">Active Sessions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="total-sessions">0</div>
+                    <div class="stat-label">Total Sessions</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- Add Participant Form -->
+            <div class="card">
+                <h2>➕ Add New Participant</h2>
+                <div id="alert-container"></div>
+                
+                <div class="form-group">
+                    <label for="participant-id">Participant ID (3 characters)*</label>
+                    <input type="text" id="participant-id" maxlength="3" placeholder="ABC" style="text-transform: uppercase;">
+                    <small style="color: #718096;">Unique 3-character identifier</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="participant-name">Full Name*</label>
+                    <input type="text" id="participant-name" placeholder="John Doe">
+                </div>
+
+                <div class="form-group">
+                    <label for="h10-device-id">H10 Device ID*</label>
+                    <input type="text" id="h10-device-id" placeholder="Polar H10 XXXXXXXX">
+                    <small style="color: #718096;">Found on device or in Bluetooth settings</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="participant-email">Email (Optional)</label>
+                    <input type="email" id="participant-email" placeholder="john@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="participant-notes">Notes (Optional)</label>
+                    <textarea id="participant-notes" rows="3" placeholder="Special instructions, medical notes, preferences..."></textarea>
+                </div>
+
+                <button class="btn btn-success" onclick="addParticipant()" style="width: 100%; margin-bottom: 10px;">
+                    ➕ Add Participant
+                </button>
+                <button class="btn btn-secondary" onclick="scanForH10Devices()" style="width: 100%;">
+                    📡 Scan for H10 Devices
+                </button>
+            </div>
+
+            <!-- Debug Console -->
+            <div class="card">
+                <h2>🔍 Debug Console</h2>
+                <div id="debug-log" style="background: #f1f5f9; padding: 15px; border-radius: 8px; height: 300px; overflow-y: auto; font-family: monospace; font-size: 14px;"></div>
+                <button class="btn btn-success" onclick="checkStorage()" style="margin-top: 10px;">Check Storage</button>
+                <button class="btn btn-danger" onclick="clearStorage()" style="margin-top: 10px;">Clear All</button>
+            </div>
+        </div>
+
+        <!-- Participants List -->
+        <div class="card">
+            <h2>👥 Registered Participants</h2>
+            <div id="participants-list">
+                <div class="empty-state">
+                    <div class="empty-icon">❤️</div>
+                    <h3>No participants registered yet</h3>
+                    <p>Add your first participant above to get started</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Debug logging function
+        function debugLog(message, type = 'info') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logDiv = document.getElementById('debug-log');
+            const color = type === 'error' ? '#e53e3e' : type === 'success' ? '#38a169' : '#4a5568';
+            
+            console.log(message);
+            logDiv.innerHTML += `<div style="color: ${color}; margin: 2px 0;">${timestamp}: ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // Load participants from localStorage
+        debugLog('🔍 Loading participants from localStorage...');
+        let participants = [];
+        const storedData = localStorage.getItem('h10_participants');
+        
+        if (storedData) {
+            try {
+                participants = JSON.parse(storedData);
+                debugLog(`✅ Loaded ${participants.length} participants from storage`, 'success');
+            } catch (e) {
+                debugLog(`❌ Error parsing stored data: ${e.message}`, 'error');
+            }
+        } else {
+            debugLog('📝 No stored participants found');
+        }
+
+        // Show alert function
+        function showAlert(message, type = 'success') {
+            debugLog(`🚨 Alert: ${message} (${type})`);
+            
+            const container = document.getElementById('alert-container');
+            const alertClass = type === 'error' ? 'alert-error' : 'alert-success';
+            
+            container.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+            
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        // Add participant function
+        function addParticipant() {
+            debugLog('🚀 addParticipant() called');
+            
+            const id = document.getElementById('participant-id').value.trim().toUpperCase();
+            const name = document.getElementById('participant-name').value.trim();
+            const deviceId = document.getElementById('h10-device-id').value.trim();
+            const email = document.getElementById('participant-email').value.trim();
+            const notes = document.getElementById('participant-notes').value.trim();
+            
+            debugLog(`📝 Form data: ID=${id}, Name=${name}, Device=${deviceId}`);
+
+            // Validation
+            if (!id || id.length !== 3) {
+                showAlert('Please enter a valid 3-character participant ID', 'error');
+                debugLog('❌ Validation failed: Invalid ID', 'error');
+                return;
+            }
+
+            if (!name) {
+                showAlert('Please enter participant name', 'error');
+                debugLog('❌ Validation failed: Missing name', 'error');
+                return;
+            }
+
+            if (!deviceId) {
+                showAlert('Please enter H10 device ID', 'error');
+                debugLog('❌ Validation failed: Missing device ID', 'error');
+                return;
+            }
+
+            // Check for duplicate
+            if (participants.find(p => p.id === id)) {
+                showAlert(`Participant ID "${id}" already exists`, 'error');
+                debugLog('❌ Validation failed: Duplicate ID', 'error');
+                return;
+            }
+
+            // Create participant
+            const participant = {
+                id,
+                name,
+                deviceId,
+                email,
+                notes,
+                addedAt: new Date().toISOString(),
+                connected: false,
+                totalSessions: 0
+            };
+
+            debugLog('➕ Adding participant to array...');
+            participants.push(participant);
+            
+            debugLog('💾 Saving to localStorage...');
+            localStorage.setItem('h10_participants', JSON.stringify(participants));
+            
+            debugLog('🎨 Rendering participants...');
+            renderParticipants();
+            
+            debugLog('📈 Updating stats...');
+            updateStats();
+            
+            debugLog('🧹 Clearing form...');
+            clearForm();
+
+            showAlert(`✅ Participant ${name} (${id}) added successfully!`, 'success');
+            debugLog(`✅ Successfully added participant: ${name}`, 'success');
+        }
+
+        // Render participants function
+        function renderParticipants() {
+            debugLog(`🎨 renderParticipants() called with ${participants.length} participants`);
+            
+            const container = document.getElementById('participants-list');
+            if (!container) {
+                debugLog('❌ participants-list container not found!', 'error');
+                return;
+            }
+
+            if (participants.length === 0) {
+                debugLog('📝 No participants - showing empty state');
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">❤️</div>
+                        <h3>No participants registered yet</h3>
+                        <p>Add your first participant above to get started</p>
+                    </div>
+                `;
+                return;
+            }
+
+            debugLog('👥 Generating HTML for participants...');
+            let html = '';
+            participants.forEach((participant, index) => {
+                debugLog(`  Rendering participant ${index + 1}: ${participant.name}`);
+                html += `
+                    <div class="participant-card">
+                        <h4 style="margin: 0 0 15px 0; color: #2d3748;">${participant.name} (${participant.id})</h4>
+                        <p><strong>Device:</strong> ${participant.deviceId}</p>
+                        ${participant.email ? `<p><strong>Email:</strong> ${participant.email}</p>` : ''}
+                        ${participant.notes ? `<p><strong>Notes:</strong> ${participant.notes}</p>` : ''}
+                        <p><strong>Added:</strong> ${new Date(participant.addedAt).toLocaleDateString()}</p>
+                        <p><strong>Status:</strong> ${participant.connected ? '🟢 Connected' : '🔴 Not Connected'}</p>
+                        <div style="margin-top: 15px;">
+                            <button class="btn btn-success" onclick="testConnection('${participant.id}')" style="margin-right: 10px;">
+                                📡 Test Connection
+                            </button>
+                            <button class="btn btn-danger" onclick="removeParticipant('${participant.id}')">
+                                Remove
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            debugLog(`🎨 Setting innerHTML (${html.length} characters)`);
+            container.innerHTML = html;
+            debugLog('✅ Participants rendered successfully', 'success');
+        }
+
+        // Remove participant function
+        function removeParticipant(id) {
+            debugLog(`🗑️ removeParticipant() called for ID: ${id}`);
+            
+            const participant = participants.find(p => p.id === id);
+            if (!participant) {
+                debugLog('❌ Participant not found', 'error');
+                return;
+            }
+
+            if (confirm(`Remove participant ${participant.name} (${id})? This cannot be undone.`)) {
+                participants = participants.filter(p => p.id !== id);
+                localStorage.setItem('h10_participants', JSON.stringify(participants));
+                renderParticipants();
+                updateStats();
+                showAlert(`Participant ${participant.name} removed successfully`);
+                debugLog(`✅ Removed participant: ${participant.name}`, 'success');
+            }
+        }
+
+        // Update stats function
+        function updateStats() {
+            debugLog('📈 Updating statistics...');
+            document.getElementById('total-participants').textContent = participants.length;
+            document.getElementById('connected-devices').textContent = participants.filter(p => p.connected).length;
+            document.getElementById('active-sessions').textContent = 0; // Placeholder
+            document.getElementById('total-sessions').textContent = participants.reduce((sum, p) => sum + p.totalSessions, 0);
+        }
+
+        // Clear form function
+        function clearForm() {
+            document.getElementById('participant-id').value = '';
+            document.getElementById('participant-name').value = '';
+            document.getElementById('h10-device-id').value = '';
+            document.getElementById('participant-email').value = '';
+            document.getElementById('participant-notes').value = '';
+        }
+
+        // Check storage function
+        function checkStorage() {
+            debugLog('📊 Manual storage check...');
+            const stored = localStorage.getItem('h10_participants');
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    debugLog(`✅ Storage contains ${parsed.length} participants`, 'success');
+                    parsed.forEach((p, i) => {
+                        debugLog(`  ${i + 1}. ${p.name} (${p.id})`);
+                    });
+                } catch (e) {
+                    debugLog(`❌ Error parsing storage: ${e.message}`, 'error');
+                }
+            } else {
+                debugLog('📝 No data in storage');
+            }
+        }
+
+        // Clear storage function
+        function clearStorage() {
+            if (confirm('Clear all participants? This cannot be undone.')) {
+                localStorage.removeItem('h10_participants');
+                participants = [];
+                renderParticipants();
+                updateStats();
+                debugLog('🧹 Storage cleared', 'success');
+                showAlert('All participants cleared');
+            }
+        }
+
+        // H10 Bluetooth functionality
+        let bluetoothDevice = null;
+        let heartRateCharacteristic = null;
+
+        // Check if browser supports Web Bluetooth
+        function checkBluetoothSupport() {
+            if (!navigator.bluetooth) {
+                debugLog('❌ Web Bluetooth not supported in this browser', 'error');
+                showAlert('Web Bluetooth not supported. Please use Chrome, Edge, or Opera.', 'error');
+                return false;
+            }
+            debugLog('✅ Web Bluetooth supported');
+            return true;
+        }
+
+        // Scan for H10 devices
+        async function scanForH10Devices() {
+            debugLog('📡 Starting H10 device scan...');
+            
+            if (!checkBluetoothSupport()) return;
+
+            try {
+                showAlert('Scanning for H10 devices... Make sure your H10 is on and nearby.');
+                
+                const device = await navigator.bluetooth.requestDevice({
+                    filters: [
+                        { namePrefix: 'Polar H10' },
+                        { services: ['heart_rate'] }
+                    ],
+                    optionalServices: ['heart_rate', 'battery_service']
+                });
+
+                debugLog(`✅ Found device: ${device.name} (${device.id})`, 'success');
+                showAlert(`Found H10 device: ${device.name}`, 'success');
+                
+                // Auto-fill the device ID field
+                const deviceIdField = document.getElementById('h10-device-id');
+                if (deviceIdField && !deviceIdField.value) {
+                    deviceIdField.value = device.name;
+                    debugLog('📝 Auto-filled device ID field');
+                }
+
+            } catch (error) {
+                debugLog(`❌ Scan failed: ${error.message}`, 'error');
+                if (error.name === 'NotFoundError') {
+                    showAlert('No H10 devices found. Make sure your H10 is on and in pairing mode.', 'error');
+                } else if (error.name === 'NotAllowedError') {
+                    showAlert('Bluetooth access denied. Please allow Bluetooth access and try again.', 'error');
+                } else {
+                    showAlert(`Scan failed: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        // Test connection to H10 device
+        async function testConnection(participantId) {
+            debugLog(`📡 Testing connection for participant: ${participantId}`);
+            
+            if (!checkBluetoothSupport()) return;
+
+            const participant = participants.find(p => p.id === participantId);
+            if (!participant) {
+                debugLog('❌ Participant not found', 'error');
+                return;
+            }
+
+            try {
+                showAlert(`Testing connection to ${participant.deviceId}...`);
+                debugLog(`🔍 Looking for device: ${participant.deviceId}`);
+
+                const device = await navigator.bluetooth.requestDevice({
+                    filters: [
+                        { namePrefix: 'Polar H10' },
+                        { services: ['heart_rate'] }
+                    ],
+                    optionalServices: ['heart_rate', 'battery_service']
+                });
+
+                debugLog(`✅ Device found: ${device.name}`);
+                
+                // Connect to device
+                debugLog('🔗 Connecting to device...');
+                const server = await device.gatt.connect();
+                debugLog('✅ Connected to GATT server');
+
+                // Get heart rate service
+                debugLog('🫀 Getting heart rate service...');
+                const service = await server.getPrimaryService('heart_rate');
+                debugLog('✅ Got heart rate service');
+
+                // Get heart rate characteristic
+                debugLog('📊 Getting heart rate characteristic...');
+                const characteristic = await service.getCharacteristic('heart_rate_measurement');
+                debugLog('✅ Got heart rate characteristic');
+
+                // Read current heart rate
+                debugLog('📖 Reading current heart rate...');
+                const value = await characteristic.readValue();
+                const heartRate = value.getUint8(1);
+                debugLog(`✅ Current heart rate: ${heartRate} BPM`, 'success');
+
+                // Update participant status
+                participant.connected = true;
+                participant.lastHeartRate = heartRate;
+                participant.lastSeen = new Date().toISOString();
+                
+                // Save and update display
+                localStorage.setItem('h10_participants', JSON.stringify(participants));
+                renderParticipants();
+                updateStats();
+
+                showAlert(`✅ ${participant.name} connected! Current HR: ${heartRate} BPM`, 'success');
+                debugLog(`✅ Connection test successful for ${participant.name}`, 'success');
+
+                // Disconnect after test
+                setTimeout(() => {
+                    if (device.gatt.connected) {
+                        device.gatt.disconnect();
+                        debugLog('🔌 Disconnected after test');
+                    }
+                }, 3000);
+
+            } catch (error) {
+                debugLog(`❌ Connection test failed: ${error.message}`, 'error');
+                
+                if (error.name === 'NotFoundError') {
+                    showAlert(`❌ ${participant.deviceId} not found. Make sure it's on and nearby.`, 'error');
+                } else if (error.name === 'NetworkError') {
+                    showAlert(`❌ Failed to connect to ${participant.name}. Check device and try again.`, 'error');
+                } else {
+                    showAlert(`❌ Connection failed: ${error.message}`, 'error');
+                }
+
+                // Update participant status
+                participant.connected = false;
+                localStorage.setItem('h10_participants', JSON.stringify(participants));
+                renderParticipants();
+                updateStats();
+            }
+        }
+
+        // Start heart rate monitoring session
+        async function startMonitoring(participantId) {
+            debugLog(`🫀 Starting heart rate monitoring for: ${participantId}`);
+            
+            const participant = participants.find(p => p.id === participantId);
+            if (!participant) {
+                debugLog('❌ Participant not found', 'error');
+                return;
+            }
+
+            if (!participant.connected) {
+                showAlert(`Please test connection for ${participant.name} first`, 'error');
+                debugLog('❌ Participant not connected', 'error');
+                return;
+            }
+
+            debugLog('🚀 Heart rate monitoring would start here...');
+            showAlert(`Heart rate monitoring started for ${participant.name}`, 'success');
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            debugLog('🚀 Page loaded - initializing...');
+            
+            // Check Bluetooth support on load
+            if (navigator.bluetooth) {
+                debugLog('✅ Web Bluetooth API available');
+            } else {
+                debugLog('❌ Web Bluetooth API not available', 'error');
+            }
+            
+            // Auto-uppercase participant ID
+            const idInput = document.getElementById('participant-id');
+            idInput.addEventListener('input', function() {
+                this.value = this.value.toUpperCase();
+            });
+
+            renderParticipants();
+            updateStats();
+            debugLog('✅ Initialization complete', 'success');
+        });
+    </script>
+</body>
+</html>

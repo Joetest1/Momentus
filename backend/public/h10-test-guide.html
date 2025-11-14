@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H10 Test Connection Guide</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .response-card {
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 15px 0;
+            transition: all 0.3s;
+        }
+        .response-card.success {
+            border-color: #48bb78;
+            background: #f0fff4;
+        }
+        .response-card.error {
+            border-color: #f56565;
+            background: #fff5f5;
+        }
+        .response-card.warning {
+            border-color: #ed8936;
+            background: #fffaf0;
+        }
+        .step-list {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+        .step-number {
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .code {
+            background: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+            margin: 8px 0;
+            display: block;
+        }
+        .highlight {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .icon {
+            font-size: 32px;
+            margin-right: 15px;
+        }
+        .response-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Bar -->
+        <div style="background: rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 15px; margin-bottom: 20px; backdrop-filter: blur(10px);">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <a href="/" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.2); border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                        🏠 Momentus Home
+                    </a>
+                    <a href="/h10-simple-management.html" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                        👥 Manage Participants
+                    </a>
+                    <a href="/h10-biometric-dashboard.html" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                        📊 Biometric Analysis
+                    </a>
+                    <a href="/admin.html" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                        ⚙️ Admin
+                    </a>
+                </div>
+                <div style="color: rgba(255,255,255,0.8); font-size: 14px;">
+                    H10 Connection Testing Guide
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h1 style="text-align: center; color: #2d3748; margin-bottom: 10px;">
+                🫀 H10 Test Connection Guide
+            </h1>
+            <p style="text-align: center; color: #718096; font-size: 18px;">
+                What to expect when testing H10 Bluetooth connections
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>🎯 Expected Responses</h2>
+            <p>When you click "📡 Test Connection" on a participant, here's what should happen:</p>
+
+            <div class="response-card success">
+                <div class="response-header">
+                    <div class="icon">✅</div>
+                    <h3 style="margin: 0; color: #22543d;">Successful Connection</h3>
+                </div>
+                <p><strong>Alert Message:</strong></p>
+                <div class="code">✅ [Participant Name] connected! Current HR: 72 BPM</div>
+                <p><strong>Debug Console Shows:</strong></p>
+                <div class="code">
+📡 Testing connection for participant: ABC<br>
+🔍 Looking for device: Polar H10 12345678<br>
+✅ Device found: Polar H10 12345678<br>
+🔗 Connecting to device...<br>
+✅ Connected to GATT server<br>
+🫀 Getting heart rate service...<br>
+✅ Got heart rate service<br>
+📊 Getting heart rate characteristic...<br>
+✅ Got heart rate characteristic<br>
+📖 Reading current heart rate...<br>
+✅ Current heart rate: 72 BPM<br>
+✅ Connection test successful for [Name]<br>
+🔌 Disconnected after test
+                </div>
+                <p><strong>What happens:</strong></p>
+                <ul>
+                    <li>Browser shows Bluetooth device picker</li>
+                    <li>You select your H10 device</li>
+                    <li>Connection established and heart rate read</li>
+                    <li>Participant status updates to "🟢 Connected"</li>
+                    <li>Device disconnects after 3 seconds</li>
+                </ul>
+            </div>
+
+            <div class="response-card error">
+                <div class="response-header">
+                    <div class="icon">❌</div>
+                    <h3 style="margin: 0; color: #742a2a;">Device Not Found</h3>
+                </div>
+                <p><strong>Alert Message:</strong></p>
+                <div class="code">❌ Polar H10 12345678 not found. Make sure it's on and nearby.</div>
+                <p><strong>Causes:</strong></p>
+                <ul>
+                    <li>H10 is turned off or battery dead</li>
+                    <li>H10 is too far away (keep within 3 feet)</li>
+                    <li>H10 is connected to another device/app</li>
+                    <li>Wrong device ID in participant data</li>
+                </ul>
+            </div>
+
+            <div class="response-card error">
+                <div class="response-header">
+                    <div class="icon">🚫</div>
+                    <h3 style="margin: 0; color: #742a2a;">Permission Denied</h3>
+                </div>
+                <p><strong>Alert Message:</strong></p>
+                <div class="code">❌ Bluetooth access denied. Please allow Bluetooth access and try again.</div>
+                <p><strong>What happened:</strong></p>
+                <ul>
+                    <li>You clicked "Cancel" on the Bluetooth permission dialog</li>
+                    <li>Browser Bluetooth permissions are blocked</li>
+                </ul>
+                <p><strong>Solution:</strong></p>
+                <ul>
+                    <li>Click the 🔒 lock icon in address bar</li>
+                    <li>Enable Bluetooth permissions</li>
+                    <li>Refresh page and try again</li>
+                </ul>
+            </div>
+
+            <div class="response-card error">
+                <div class="response-header">
+                    <div class="icon">🔗</div>
+                    <h3 style="margin: 0; color: #742a2a;">Connection Failed</h3>
+                </div>
+                <p><strong>Alert Message:</strong></p>
+                <div class="code">❌ Failed to connect to [Name]. Check device and try again.</div>
+                <p><strong>Causes:</strong></p>
+                <ul>
+                    <li>Device found but couldn't establish GATT connection</li>
+                    <li>H10 is in use by another application</li>
+                    <li>Bluetooth interference</li>
+                    <li>H10 needs to be reset</li>
+                </ul>
+            </div>
+
+            <div class="response-card warning">
+                <div class="response-header">
+                    <div class="icon">⚠️</div>
+                    <h3 style="margin: 0; color: #744210;">Browser Not Supported</h3>
+                </div>
+                <p><strong>Alert Message:</strong></p>
+                <div class="code">❌ Web Bluetooth not supported. Please use Chrome, Edge, or Opera.</div>
+                <p><strong>What this means:</strong></p>
+                <ul>
+                    <li>You're using Safari or Firefox</li>
+                    <li>Web Bluetooth API is not available</li>
+                    <li>Switch to Chrome, Edge, or Opera to test</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🔧 Step-by-Step Testing Process</h2>
+            
+            <div class="step-list">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <strong>Prepare your H10</strong><br>
+                        <small>Turn on, make sure it's not connected to other apps, keep within 3 feet</small>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <strong>Click "📡 Test Connection"</strong><br>
+                        <small>Browser will show "Testing connection to [device]..." alert</small>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <strong>Browser shows device picker</strong><br>
+                        <small>Look for your H10 in the list (e.g., "Polar H10 87654321")</small>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div>
+                        <strong>Select your device and click "Pair"</strong><br>
+                        <small>Browser will attempt to connect</small>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div>
+                        <strong>Watch debug console</strong><br>
+                        <small>Shows detailed connection progress</small>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">6</div>
+                    <div>
+                        <strong>Get result</strong><br>
+                        <small>Success shows heart rate, failure shows error message</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🩺 Heart Rate Values</h2>
+            
+            <div class="highlight">
+                <strong>What heart rates to expect:</strong>
+            </div>
+            
+            <ul>
+                <li><strong>Resting (sitting):</strong> 60-100 BPM</li>
+                <li><strong>Light activity:</strong> 100-120 BPM</li>
+                <li><strong>Moderate activity:</strong> 120-150 BPM</li>
+                <li><strong>Vigorous activity:</strong> 150+ BPM</li>
+            </ul>
+
+            <p><strong>If you get unusual readings:</strong></p>
+            <ul>
+                <li><strong>Very low (< 40 BPM):</strong> Check H10 contact with skin</li>
+                <li><strong>Very high (> 200 BPM):</strong> Sensor might be picking up movement, not heart rate</li>
+                <li><strong>Erratic readings:</strong> Wet the electrodes or adjust strap tightness</li>
+            </ul>
+        </div>
+
+        <div class="card">
+            <h2>📱 Try It Now</h2>
+            <p>Ready to test? Make sure you're using Chrome, Edge, or Opera, then:</p>
+            
+            <a href="/h10-simple-management.html" class="btn btn-primary" target="_blank">
+                🫀 Open H10 Management Page
+            </a>
+            
+            <p style="margin-top: 20px;"><strong>Testing tip:</strong> Open both this guide and the management page in separate tabs so you can refer to this guide while testing.</p>
+        </div>
+
+        <div class="card">
+            <h2>🆘 Troubleshooting</h2>
+            
+            <h3>If nothing happens when you click Test Connection:</h3>
+            <ul>
+                <li>Check that you're using Chrome, Edge, or Opera (not Safari)</li>
+                <li>Make sure JavaScript is enabled</li>
+                <li>Check browser console for error messages</li>
+                <li>Try refreshing the page</li>
+            </ul>
+
+            <h3>If device picker doesn't show your H10:</h3>
+            <ul>
+                <li>Make sure H10 is turned on (LED should be blinking)</li>
+                <li>Check that it's not connected to Polar Beat or other apps</li>
+                <li>Try turning H10 off and on again</li>
+                <li>Move H10 closer to your computer</li>
+            </ul>
+
+            <h3>If connection keeps failing:</h3>
+            <ul>
+                <li>Reset your H10 (hold button for 10 seconds if available)</li>
+                <li>Clear browser cache and reload page</li>
+                <li>Check Mac Bluetooth is enabled in System Preferences</li>
+                <li>Try a different browser</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // Show current browser compatibility
+        document.addEventListener('DOMContentLoaded', function() {
+            const hasWebBluetooth = navigator.bluetooth !== undefined;
+            const userAgent = navigator.userAgent;
+            let browserName = "Unknown";
+            
+            if (userAgent.includes("Chrome") && !userAgent.includes("Edg")) {
+                browserName = "Chrome";
+            } else if (userAgent.includes("Edg")) {
+                browserName = "Edge";
+            } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
+                browserName = "Safari";
+            } else if (userAgent.includes("Firefox")) {
+                browserName = "Firefox";
+            } else if (userAgent.includes("Opera")) {
+                browserName = "Opera";
+            }
+            
+            // Add status indicator
+            const statusDiv = document.createElement('div');
+            statusDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: ' + 
+                (hasWebBluetooth ? '#48bb78' : '#f56565') + 
+                '; color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; z-index: 1000; font-size: 14px;';
+            statusDiv.textContent = `${browserName} - ${hasWebBluetooth ? 'Ready for H10 Testing ✅' : 'Switch to Chrome/Edge ❌'}`;
+            document.body.appendChild(statusDiv);
+        });
+    </script>
+</body>
+</html>

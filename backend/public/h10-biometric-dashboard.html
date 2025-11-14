@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H10 Biometric Analysis Dashboard</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #2d5a27 0%, #4a7c59 50%, #668b5c 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            color: #333;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+        .metric-card {
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+        .metric-card.excellent {
+            border-color: #48bb78;
+            background: #f0fff4;
+        }
+        .metric-card.good {
+            border-color: #ed8936;
+            background: #fffaf0;
+        }
+        .metric-card.poor {
+            border-color: #f56565;
+            background: #fff5f5;
+        }
+        .metric-value {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .metric-label {
+            font-size: 0.9em;
+            color: #718096;
+            margin-bottom: 5px;
+        }
+        .metric-description {
+            font-size: 0.8em;
+            color: #a0aec0;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        .btn-danger {
+            background: #f56565;
+            color: white;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        .real-time-display {
+            background: linear-gradient(135deg, #4a5568 0%, #2d3748 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px 0;
+        }
+        .heart-rate-display {
+            font-size: 3em;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            color: #ff6b6b;
+        }
+        .pulse-animation {
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.7; }
+            100% { opacity: 1; }
+        }
+        .session-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin: 20px 0;
+        }
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            display: inline-block;
+        }
+        .status-active {
+            background: #48bb78;
+            animation: pulse 2s infinite;
+        }
+        .status-inactive {
+            background: #cbd5e0;
+        }
+        .feedback-panel {
+            background: #edf2f7;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid #667eea;
+        }
+        .feedback-positive {
+            border-left-color: #48bb78;
+            background: #f0fff4;
+        }
+        .feedback-warning {
+            border-left-color: #ed8936;
+            background: #fffaf0;
+        }
+        .chart-container {
+            height: 200px;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #718096;
+        }
+        .participant-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .participant-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            margin: 10px 0;
+            background: white;
+        }
+        .debug-console {
+            background: #1a202c;
+            color: #e2e8f0;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: monospace;
+            font-size: 12px;
+            height: 200px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+        @media (max-width: 768px) {
+            .grid, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Bar -->
+        <div style="background: rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 15px; margin-bottom: 20px; backdrop-filter: blur(10px);">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <a href="/" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.2); border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                        🏠 Momentus Home
+                    </a>
+                    <a href="/h10-simple-management.html" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                        👥 Manage Participants
+                    </a>
+                    <a href="/admin.html" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                        ⚙️ Admin
+                    </a>
+                </div>
+                <div style="color: rgba(255,255,255,0.8); font-size: 14px;">
+                    H10 Biometric Analysis
+                </div>
+            </div>
+        </div>
+
+        <h1 style="text-align: center; color: white; margin-bottom: 30px; font-size: 2.5em; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+            🧘‍♂️ H10 Biometric Analysis Dashboard
+        </h1>
+
+        <!-- Real-time Monitoring Section -->
+        <div class="card">
+            <h2>📊 Real-time Biometric Monitoring</h2>
+            <div id="activeSessionPanel" style="display: none;">
+                <div class="real-time-display">
+                    <div style="display: flex; align-items: center; margin-bottom: 20px;">
+                        <span class="status-indicator status-active"></span>
+                        <h3 style="margin: 0;">Active Session: <span id="activeParticipantName">--</span></h3>
+                        <div style="margin-left: auto;">
+                            <span id="sessionDuration">00:00</span>
+                        </div>
+                    </div>
+                    
+                    <div class="heart-rate-display pulse-animation" id="liveHeartRate">
+                        -- <span style="font-size: 0.5em;">BPM</span>
+                    </div>
+                    
+                    <div class="grid-3">
+                        <div class="metric-card" id="meditationDepthCard">
+                            <div class="metric-label">Meditation Depth</div>
+                            <div class="metric-value" id="meditationDepth">0%</div>
+                            <div class="metric-description">Parasympathetic activation</div>
+                        </div>
+                        <div class="metric-card" id="coherenceCard">
+                            <div class="metric-label">Coherence Score</div>
+                            <div class="metric-value" id="coherenceScore">0.0</div>
+                            <div class="metric-description">Heart-breath synchronization</div>
+                        </div>
+                        <div class="metric-card" id="breathingCard">
+                            <div class="metric-label">Breathing Rate</div>
+                            <div class="metric-value" id="breathingRate">-- /min</div>
+                            <div class="metric-description">Breaths per minute</div>
+                        </div>
+                    </div>
+                    
+                    <div class="session-controls">
+                        <button class="btn btn-danger" onclick="stopMonitoring()">⏹️ Stop Session</button>
+                        <button class="btn btn-primary" onclick="exportSessionData()">📊 Export Data</button>
+                        <button class="btn btn-success" onclick="generateFeedback()">💡 Get Feedback</button>
+                    </div>
+                </div>
+                
+                <!-- Real-time Feedback -->
+                <div id="feedbackContainer"></div>
+                
+                <!-- HRV Metrics -->
+                <div style="margin-top: 20px;">
+                    <h3>🫀 HRV Analysis</h3>
+                    <div class="grid">
+                        <div>
+                            <div class="metric-card">
+                                <div class="metric-label">RMSSD</div>
+                                <div class="metric-value" id="rmssdValue">-- ms</div>
+                                <div class="metric-description">Beat-to-beat variability</div>
+                            </div>
+                        </div>
+                        <div>
+                            <div class="metric-card">
+                                <div class="metric-label">SDNN</div>
+                                <div class="metric-value" id="sdnnValue">-- ms</div>
+                                <div class="metric-description">Overall variability</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- No Active Session -->
+            <div id="noSessionPanel">
+                <div style="text-align: center; padding: 40px; color: #718096;">
+                    <h3>No Active Biometric Session</h3>
+                    <p>Select a participant below and start monitoring to see real-time analysis</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Participants Section -->
+        <div class="card">
+            <h2>👥 Participants</h2>
+            <div class="participant-list" id="participantsList">
+                <div style="text-align: center; padding: 20px; color: #718096;">
+                    Loading participants...
+                </div>
+            </div>
+        </div>
+
+        <!-- Debug Console -->
+        <div class="card">
+            <h2>🔍 Debug Console</h2>
+            <div class="debug-console" id="debugConsole">
+                System ready - waiting for biometric data...
+            </div>
+            <button class="btn btn-primary" onclick="clearDebugLog()">Clear Log</button>
+            <button class="btn btn-success" onclick="testHRVAnalysis()">Test HRV Analysis</button>
+        </div>
+    </div>
+
+    <!-- Load the analysis engines -->
+    <script src="/services/HRVAnalyzer.js"></script>
+    <script src="/services/BiometricProcessor.js"></script>
+
+    <script>
+        // Global variables
+        let biometricProcessor = null;
+        let activeSession = null;
+        let heartRateMonitoringInterval = null;
+        let sessionTimer = null;
+        let bluetoothDevice = null;
+        let heartRateCharacteristic = null;
+
+        // Initialize system
+        document.addEventListener('DOMContentLoaded', function() {
+            debugLog('🚀 H10 Biometric Dashboard initializing...');
+            
+            // Initialize biometric processor
+            try {
+                biometricProcessor = new BiometricProcessor();
+                setupEventListeners();
+                debugLog('✅ BiometricProcessor initialized');
+            } catch (error) {
+                debugLog('❌ Error initializing BiometricProcessor: ' + error.message);
+            }
+            
+            loadParticipants();
+            checkWebBluetoothSupport();
+        });
+
+        // Setup event listeners for biometric processor
+        function setupEventListeners() {
+            if (!biometricProcessor) return;
+
+            biometricProcessor.on('sessionStarted', (data) => {
+                debugLog(`🎯 Session started for ${data.session.participant.name}`);
+                showActiveSession(data.session);
+            });
+
+            biometricProcessor.on('heartRateProcessed', (data) => {
+                updateRealTimeDisplay(data);
+            });
+
+            biometricProcessor.on('deepMeditationEntered', (data) => {
+                debugLog(`🧘‍♂️ Deep meditation state detected for ${data.participantId}!`);
+                showFeedback('🧘‍♂️ Excellent! You\'ve entered a deep meditative state.', 'positive');
+            });
+
+            biometricProcessor.on('highCoherenceAchieved', (data) => {
+                debugLog(`✨ High coherence achieved by ${data.participantId}!`);
+                showFeedback('✨ Outstanding coherence! Your heart and breath are perfectly synchronized.', 'positive');
+            });
+
+            biometricProcessor.on('sessionEnded', (data) => {
+                debugLog(`🏁 Session ended for ${data.participantId}`);
+                showSessionSummary(data.report);
+                hideActiveSession();
+            });
+        }
+
+        // Debug logging
+        function debugLog(message) {
+            const console = document.getElementById('debugConsole');
+            const timestamp = new Date().toLocaleTimeString();
+            console.innerHTML += `<div>${timestamp}: ${message}</div>`;
+            console.scrollTop = console.scrollHeight;
+            
+            // Keep console size manageable
+            const lines = console.querySelectorAll('div');
+            if (lines.length > 100) {
+                lines[0].remove();
+            }
+        }
+
+        // Load participants
+        function loadParticipants() {
+            const stored = localStorage.getItem('h10_participants');
+            const participants = stored ? JSON.parse(stored) : [];
+            
+            const container = document.getElementById('participantsList');
+            
+            if (participants.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 20px; color: #718096;">
+                        <p>No participants found. <a href="/h10-simple-management.html">Add participants</a> to start biometric monitoring.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            participants.forEach(participant => {
+                const isActive = activeSession && activeSession.participantId === participant.id;
+                html += `
+                    <div class="participant-item">
+                        <div>
+                            <h4 style="margin: 0 0 5px 0;">${participant.name} (${participant.id})</h4>
+                            <p style="margin: 0; color: #718096; font-size: 14px;">Device: ${participant.deviceId}</p>
+                        </div>
+                        <div>
+                            ${isActive ? 
+                                `<span class="status-indicator status-active"></span><strong style="color: #48bb78;">Monitoring</strong>` :
+                                `<button class="btn btn-success" onclick="startBiometricSession('${participant.id}')">🫀 Start Monitoring</button>`
+                            }
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+            debugLog(`📊 Loaded ${participants.length} participants`);
+        }
+
+        // Start biometric session
+        async function startBiometricSession(participantId) {
+            const stored = localStorage.getItem('h10_participants');
+            const participants = stored ? JSON.parse(stored) : [];
+            const participant = participants.find(p => p.id === participantId);
+            
+            if (!participant) {
+                alert('Participant not found!');
+                return;
+            }
+
+            debugLog(`🚀 Starting biometric session for ${participant.name}`);
+            
+            try {
+                // Connect to H10 device
+                await connectToH10(participant);
+                
+                // Start biometric processing session
+                const session = biometricProcessor.startSession(participantId, participant, {
+                    meditationType: 'entrainment',
+                    duration: 600,
+                    feedbackEnabled: true
+                });
+                
+                activeSession = session;
+                
+                // Start heart rate monitoring
+                await startHeartRateMonitoring(participantId);
+                
+                // Update UI
+                loadParticipants();
+                
+            } catch (error) {
+                debugLog(`❌ Error starting session: ${error.message}`);
+                alert(`Failed to start monitoring: ${error.message}`);
+            }
+        }
+
+        // Connect to H10 device
+        async function connectToH10(participant) {
+            if (!navigator.bluetooth) {
+                throw new Error('Web Bluetooth not supported. Please use Chrome, Edge, or Opera.');
+            }
+
+            debugLog(`🔗 Connecting to ${participant.deviceId}...`);
+
+            bluetoothDevice = await navigator.bluetooth.requestDevice({
+                filters: [
+                    { namePrefix: 'Polar H10' },
+                    { services: ['heart_rate'] }
+                ],
+                optionalServices: ['heart_rate', 'battery_service']
+            });
+
+            const server = await bluetoothDevice.gatt.connect();
+            const service = await server.getPrimaryService('heart_rate');
+            heartRateCharacteristic = await service.getCharacteristic('heart_rate_measurement');
+
+            debugLog(`✅ Connected to ${bluetoothDevice.name}`);
+        }
+
+        // Start heart rate monitoring
+        async function startHeartRateMonitoring(participantId) {
+            if (!heartRateCharacteristic) {
+                throw new Error('Heart rate characteristic not available');
+            }
+
+            debugLog('🫀 Starting heart rate notifications...');
+
+            await heartRateCharacteristic.startNotifications();
+            
+            heartRateCharacteristic.addEventListener('characteristicvaluechanged', (event) => {
+                const heartRate = event.target.value.getUint8(1);
+                const timestamp = new Date().toISOString();
+                
+                // Process through biometric processor
+                biometricProcessor.processHeartRate(participantId, heartRate, timestamp);
+            });
+
+            debugLog('✅ Heart rate monitoring started');
+        }
+
+        // Update real-time display
+        function updateRealTimeDisplay(data) {
+            const { heartRate, analysis, participantId } = data;
+            
+            // Update heart rate display
+            document.getElementById('liveHeartRate').innerHTML = 
+                `${heartRate} <span style="font-size: 0.5em;">BPM</span>`;
+            
+            // Update meditation metrics
+            updateMetricCard('meditationDepthCard', 'meditationDepth', 
+                Math.round(analysis.meditationDepth * 100) + '%', analysis.meditationDepth);
+            
+            updateMetricCard('coherenceCard', 'coherenceScore', 
+                analysis.coherenceScore.toFixed(2), analysis.coherenceScore);
+            
+            updateMetricCard('breathingCard', 'breathingRate', 
+                Math.round(analysis.breathingRate) + ' /min', analysis.breathingRate / 20);
+            
+            // Update HRV metrics
+            if (analysis.hrvMetrics) {
+                document.getElementById('rmssdValue').textContent = 
+                    analysis.hrvMetrics.rmssd ? analysis.hrvMetrics.rmssd + ' ms' : '-- ms';
+                document.getElementById('sdnnValue').textContent = 
+                    analysis.hrvMetrics.sdnn ? analysis.hrvMetrics.sdnn + ' ms' : '-- ms';
+            }
+        }
+
+        // Update metric card styling based on value
+        function updateMetricCard(cardId, valueId, displayValue, normalizedValue) {
+            const card = document.getElementById(cardId);
+            const valueElement = document.getElementById(valueId);
+            
+            valueElement.textContent = displayValue;
+            
+            // Update card styling based on value quality
+            card.className = 'metric-card';
+            if (normalizedValue > 0.8) {
+                card.classList.add('excellent');
+            } else if (normalizedValue > 0.5) {
+                card.classList.add('good');
+            } else if (normalizedValue < 0.3) {
+                card.classList.add('poor');
+            }
+        }
+
+        // Show active session panel
+        function showActiveSession(session) {
+            document.getElementById('noSessionPanel').style.display = 'none';
+            document.getElementById('activeSessionPanel').style.display = 'block';
+            document.getElementById('activeParticipantName').textContent = session.participant.name;
+            
+            // Start session timer
+            const startTime = new Date(session.startTime);
+            sessionTimer = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - startTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                document.getElementById('sessionDuration').textContent = 
+                    `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        // Hide active session panel
+        function hideActiveSession() {
+            document.getElementById('activeSessionPanel').style.display = 'none';
+            document.getElementById('noSessionPanel').style.display = 'block';
+            
+            if (sessionTimer) {
+                clearInterval(sessionTimer);
+                sessionTimer = null;
+            }
+        }
+
+        // Stop monitoring
+        async function stopMonitoring() {
+            if (!activeSession) return;
+            
+            debugLog('⏹️ Stopping biometric monitoring...');
+            
+            // Stop heart rate notifications
+            if (heartRateCharacteristic) {
+                await heartRateCharacteristic.stopNotifications();
+            }
+            
+            // Disconnect Bluetooth
+            if (bluetoothDevice && bluetoothDevice.gatt.connected) {
+                bluetoothDevice.gatt.disconnect();
+            }
+            
+            // End biometric session
+            const report = biometricProcessor.endSession(activeSession.participantId);
+            
+            activeSession = null;
+            bluetoothDevice = null;
+            heartRateCharacteristic = null;
+            
+            loadParticipants();
+            debugLog('✅ Monitoring stopped');
+        }
+
+        // Generate feedback
+        function generateFeedback() {
+            if (!activeSession) return;
+            
+            const feedback = biometricProcessor.generateFeedback(activeSession.participantId);
+            if (feedback && feedback.recommendations.length > 0) {
+                feedback.recommendations.forEach(rec => {
+                    showFeedback(rec.message, rec.priority);
+                });
+            } else {
+                showFeedback('Keep up the great work! Your meditation is progressing well.', 'positive');
+            }
+        }
+
+        // Show feedback message
+        function showFeedback(message, type = 'normal') {
+            const container = document.getElementById('feedbackContainer');
+            const feedbackClass = type === 'positive' ? 'feedback-positive' : 
+                                 type === 'warning' ? 'feedback-warning' : 'feedback-panel';
+            
+            const feedbackDiv = document.createElement('div');
+            feedbackDiv.className = feedbackClass;
+            feedbackDiv.innerHTML = `<strong>💡 Feedback:</strong> ${message}`;
+            
+            container.appendChild(feedbackDiv);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                feedbackDiv.remove();
+            }, 10000);
+        }
+
+        // Export session data
+        function exportSessionData() {
+            if (!activeSession) return;
+            
+            const data = biometricProcessor.exportSessionData(activeSession.participantId);
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `biometric_session_${activeSession.participant.name}_${new Date().toISOString().split('T')[0]}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            debugLog('📊 Session data exported');
+        }
+
+        // Show session summary
+        function showSessionSummary(report) {
+            alert(`Session Summary for ${report.participant.name}:
+            
+Duration: ${Math.floor(report.duration / 60)} minutes
+Average Heart Rate: ${report.summary.avgHeartRate} BPM
+Average Meditation Depth: ${Math.round(report.summary.avgMeditationDepth * 100)}%
+Average Coherence: ${Math.round(report.summary.avgCoherence * 100)}%
+Deep Meditation Time: ${Math.floor(report.summary.deepMeditationTime / 60)} minutes
+
+Data exported to file.`);
+        }
+
+        // Check Web Bluetooth support
+        function checkWebBluetoothSupport() {
+            if (!navigator.bluetooth) {
+                debugLog('❌ Web Bluetooth not supported - H10 monitoring unavailable');
+                showFeedback('Web Bluetooth not supported. Please use Chrome, Edge, or Opera for H10 monitoring.', 'warning');
+            } else {
+                debugLog('✅ Web Bluetooth supported');
+            }
+        }
+
+        // Clear debug log
+        function clearDebugLog() {
+            document.getElementById('debugConsole').innerHTML = '';
+            debugLog('Debug console cleared');
+        }
+
+        // Test HRV analysis
+        function testHRVAnalysis() {
+            debugLog('🧪 Testing HRV analysis with simulated data...');
+            
+            const testParticipant = {
+                id: 'TEST',
+                name: 'Test Subject',
+                deviceId: 'Simulated H10'
+            };
+            
+            // Start test session
+            const session = biometricProcessor.startSession('TEST', testParticipant);
+            activeSession = session;
+            showActiveSession(session);
+            
+            // Simulate heart rate data
+            let heartRate = 70;
+            let counter = 0;
+            
+            const interval = setInterval(() => {
+                // Simulate realistic heart rate variability
+                heartRate += (Math.random() - 0.5) * 10;
+                heartRate = Math.max(50, Math.min(100, heartRate));
+                
+                biometricProcessor.processHeartRate('TEST', heartRate);
+                
+                counter++;
+                if (counter >= 60) { // 1 minute of test data
+                    clearInterval(interval);
+                    debugLog('🧪 Test completed - stopping simulation');
+                    setTimeout(() => {
+                        if (activeSession && activeSession.participantId === 'TEST') {
+                            const report = biometricProcessor.endSession('TEST');
+                            hideActiveSession();
+                            activeSession = null;
+                        }
+                    }, 5000);
+                }
+            }, 1000);
+        }
+    </script>
+</body>
+</html>

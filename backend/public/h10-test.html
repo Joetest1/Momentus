@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>H10 Test Page</title>
+</head>
+<body>
+    <h1>Simple H10 Participant Test</h1>
+    
+    <div>
+        <input type="text" id="participant-id" placeholder="ID (3 chars)" maxlength="3">
+        <input type="text" id="participant-name" placeholder="Name">
+        <input type="text" id="h10-device-id" placeholder="Device ID">
+        <button onclick="addParticipant()">Add Participant</button>
+    </div>
+    
+    <div id="participants-list"></div>
+    
+    <script>
+        let participants = JSON.parse(localStorage.getItem('h10_participants') || '[]');
+        
+        function addParticipant() {
+            console.log('🚀 Adding participant...');
+            
+            const id = document.getElementById('participant-id').value.trim().toUpperCase();
+            const name = document.getElementById('participant-name').value.trim();
+            const deviceId = document.getElementById('h10-device-id').value.trim();
+            
+            if (!id || !name || !deviceId) {
+                alert('Please fill in all fields');
+                return;
+            }
+            
+            const participant = {
+                id,
+                name,
+                deviceId,
+                addedAt: new Date().toISOString()
+            };
+            
+            participants.push(participant);
+            localStorage.setItem('h10_participants', JSON.stringify(participants));
+            renderParticipants();
+            
+            // Clear form
+            document.getElementById('participant-id').value = '';
+            document.getElementById('participant-name').value = '';
+            document.getElementById('h10-device-id').value = '';
+            
+            alert('Participant added successfully!');
+        }
+        
+        function renderParticipants() {
+            const container = document.getElementById('participants-list');
+            let html = '<h2>Participants (' + participants.length + '):</h2>';
+            
+            participants.forEach(participant => {
+                html += '<div style="border: 1px solid #ccc; padding: 10px; margin: 5px;">';
+                html += '<strong>' + participant.name + '</strong> (' + participant.id + ')<br>';
+                html += 'Device: ' + participant.deviceId + '<br>';
+                html += 'Added: ' + new Date(participant.addedAt).toLocaleString();
+                html += '</div>';
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Load participants on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            renderParticipants();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,51 @@
+MOCK AUDIO FILE - DEVELOPMENT MODE
+Generated: 2025-11-10T19:45:48.367Z
+Session: entrainment-movement-1762803948366
+Text Length: 4040 characters
+Estimated Duration: 308 seconds (5 minutes)
+Voice: en-GB-RyanNeural (British Documentary Style)
+
+AUDIO EXPERIENCE:
+The WAV file contains 308 seconds of silence as a placeholder.
+In production with Azure TTS, this would be a full spoken meditation
+with natural British male voice, documentary-style pacing, and proper
+meditation pauses and breathing spaces.
+
+MEDITATION CONTENT THAT WOULD BE SPOKEN:
+Here is a 10-minute guided meditation script focused on natural entrainment and synchronization patterns, specifically movement rhythms:
+
+OPENING (1-2 minutes)
+Begin by settling into a comfortable seated position. Feel the weight of your body grounding you to the earth below. Take a few deep breaths, allowing your belly to rise and fall naturally. As you breathe, become aware of the rhythm of your inhalations and exhalations. Notice how your breath ebbs and flows in a natural, wavelike cadence. 
+
+This rhythm is part of a vast tapestry of synchronization unfolding all around us in the natural world. From flocks of birds in graceful formations to schools of fish moving as a single entity, we witness the power of entrainment – how individual parts harmonize into collective wholes through the exchange of information and energy. 
+
+In this meditation, we'll explore the science of these movement rhythms, using the metaphor of a flock of birds to guide our awareness. Allow your senses to become attuned to the intricate dance of synchronized motion.
+
+CORE PRACTICE (7 minutes)
+Imagine a flock of birds in the sky above you, their wingtips tracing arcs through the air in perfect unison. Notice how each bird flaps its wings in tandem with its neighbors, the subtle feedback loops between their movements creating an undulating, wavelike pattern across the entire group.
+
+As the flock shifts direction, the birds adjust their flight paths, aligning with one another through local interaction rules. No single bird is dictating the group's movements - instead, the flock self-organizes, each individual following the cues of its closest neighbors. Velocity matching, directional alignment, and collective sensing give rise to this emergent coordination.
+
+Tune into the kinesthetic awareness of this synchronized motion. Feel your own breath and body movements begin to entrain with the rhythms of the flock. Your inhalations and exhalations may start to synchronize with the flapping of the birds' wings. Imagine your limbs mirroring the graceful turns and dives of the flock, your muscles and joints flowing with their collective dance.
+
+Now expand your awareness beyond the flock, sensing the larger currents of movement that enfold this collective motion. Envision waves of synchronized turning rippling outward, spreading through the sky like synchronized heartbeats. Imagine the whole landscape pulsing with interconnected rhythms - the sway of trees, the ebb and flow of tides, the migration patterns of herds. 
+
+DEEPENING 
+Tune into the feedback mechanisms that sustain this natural entrainment. Each bird, each organism, each system is responding to the movements of its neighbors, adjusting its own motions to better align with the whole. This recursive, self-organizing dynamic creates a living, breathing landscape of synchronized flow.
+
+As you witness this grand choreography, sense how your own body and breath are interwoven into these universal patterns. Your cells, your muscles, your very molecules are pulsing to the rhythms of the natural world. Breathe in the collective motion, feel it moving through you.
+
+INTEGRATION
+Remain present with the sensations of synchronized movement. Allow this embodied awareness to saturate your entire being. Know that you are not separate from this living, breathing web of interconnection - you are an integral part of its ceaseless dance.
+
+When you are ready, gently open your eyes and carry this synchronized presence with you as you move through the rest of your day. Allow the patterns you've experienced to guide your steps, your gestures, your interactions. Attune yourself to the natural flow all around you.
+
+CLOSING 
+The rhythms you've cultivated in this practice are not confined to this meditation. They are the very heartbeat of life itself, pulsing through all of creation. By aligning with these universal patterns, you attune yourself to the intricate symphony of the natural world. May you continue to sense and savor this primal synchronization in the days ahead.
+
+[TO ENABLE REAL TTS AUDIO:
+1. Get Azure Cognitive Services TTS API key from Microsoft Azure
+2. Add AZURE_TTS_API_KEY=your_key to .env file
+3. Add AZURE_TTS_REGION=eastus to .env file  
+4. Restart server
+5. The same meditation will then generate with full voice narration]

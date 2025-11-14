@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head><title>Storage Debug</title></head>
+<body>
+    <h1>localStorage Debug</h1>
+    <div id="output"></div>
+    <script>
+        const output = document.getElementById('output');
+        let html = '<h2>All localStorage items:</h2>';
+        
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            const value = localStorage.getItem(key);
+            html += '<div style="border: 1px solid #ccc; margin: 10px; padding: 10px;">';
+            html += '<strong>' + key + ':</strong><br>';
+            html += '<pre>' + value + '</pre>';
+            html += '</div>';
+        }
+        
+        if (localStorage.length === 0) {
+            html += '<p>No localStorage items found</p>';
+        }
+        
+        output.innerHTML = html;
+    </script>
+</body>
+</html>

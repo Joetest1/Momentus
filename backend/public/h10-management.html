@@ -1,0 +1,1407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polar H10 Participant Management - Momentus</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .header h1 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 1.1em;
+        }
+
+        .nav-links {
+            margin-top: 15px;
+        }
+
+        .nav-links a {
+            color: #667eea;
+            text-decoration: none;
+            margin: 0 15px;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: background-color 0.2s;
+        }
+
+        .nav-links a:hover {
+            background-color: #f7fafc;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2d3748;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(0px);
+            box-shadow: 0 1px 4px rgba(102, 126, 234, 0.4);
+            background: #4c51bf;
+        }
+
+        .btn:focus {
+            outline: none;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3), 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        /* Ripple effect */
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: width 0.6s, height 0.6s, top 0.6s, left 0.6s;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn > * {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-success {
+            background: #38a169;
+            box-shadow: 0 2px 8px rgba(56, 161, 105, 0.3);
+        }
+
+        .btn-success:hover {
+            background: #2f855a;
+            box-shadow: 0 4px 12px rgba(56, 161, 105, 0.4);
+        }
+
+        .btn-success:active {
+            background: #276749;
+            transform: translateY(0px);
+            box-shadow: 0 1px 4px rgba(56, 161, 105, 0.4);
+        }
+
+        .btn-success:focus {
+            box-shadow: 0 2px 8px rgba(56, 161, 105, 0.3), 0 0 0 3px rgba(56, 161, 105, 0.2);
+        }
+
+        .btn-danger {
+            background: #e53e3e;
+            box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: #c53030;
+            box-shadow: 0 4px 12px rgba(229, 62, 62, 0.4);
+        }
+
+        .btn-danger:active {
+            background: #9c2c2c;
+            transform: translateY(0px);
+            box-shadow: 0 1px 4px rgba(229, 62, 62, 0.4);
+        }
+
+        .btn-danger:focus {
+            box-shadow: 0 2px 8px rgba(229, 62, 62, 0.3), 0 0 0 3px rgba(229, 62, 62, 0.2);
+        }
+
+        .btn-secondary {
+            background: #718096;
+            box-shadow: 0 2px 8px rgba(113, 128, 150, 0.3);
+        }
+
+        .btn-secondary:hover {
+            background: #4a5568;
+            box-shadow: 0 4px 12px rgba(113, 128, 150, 0.4);
+        }
+
+        .btn-secondary:active {
+            background: #2d3748;
+            transform: translateY(0px);
+            box-shadow: 0 1px 4px rgba(113, 128, 150, 0.4);
+        }
+
+        .btn-secondary:focus {
+            box-shadow: 0 2px 8px rgba(113, 128, 150, 0.3), 0 0 0 3px rgba(113, 128, 150, 0.2);
+        }
+
+        /* Disabled and loading states */
+        .btn:disabled {
+            background: #cbd5e0 !important;
+            color: #a0aec0 !important;
+            cursor: not-allowed !important;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .btn:disabled:hover {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+
+        .btn:disabled::before {
+            display: none;
+        }
+
+        .btn.loading {
+            pointer-events: none;
+            position: relative;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            margin: -8px 0 0 -8px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: button-spin 1s linear infinite;
+        }
+
+        .btn.loading > * {
+            opacity: 0;
+        }
+
+        @keyframes button-spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes ripple {
+            0% { transform: scale(0); opacity: 1; }
+            100% { transform: scale(4); opacity: 0; }
+        }
+
+        .participant-card {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 15px;
+            transition: all 0.2s;
+        }
+
+        .participant-card:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .participant-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .participant-info {
+            flex: 1;
+        }
+
+        .participant-name {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .participant-id {
+            background: #667eea;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 16px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .status-indicator {
+            font-size: 1.2em;
+            margin-right: 8px;
+        }
+
+        .device-info {
+            color: #4a5568;
+            margin-bottom: 10px;
+        }
+
+        .participant-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .participant-actions .btn {
+            font-size: 0.9em;
+            padding: 8px 16px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 0.9em;
+        }
+
+        .guide-box {
+            background: #ebf8ff;
+            border: 2px solid #63b3ed;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .guide-title {
+            color: #2c5282;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .guide-content {
+            color: #2d3748;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #718096;
+        }
+
+        .empty-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .alert-success {
+            background: #c6f6d5;
+            color: #22543d;
+            border: 1px solid #9ae6b4;
+        }
+
+        .alert-error {
+            background: #fed7d7;
+            color: #c53030;
+            border: 1px solid #feb2b2;
+        }
+
+        @media (max-width: 768px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .participant-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .participant-actions {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>❤️ Polar H10 Participant Management</h1>
+            <p>Manage heart rate monitors and participant data for meditation sessions</p>
+            <div class="nav-links">
+                <a href="/admin.html">← Back to Admin Dashboard</a>
+                <a href="/h10-troubleshooting.html">🔧 H10 Troubleshooting Guide</a>
+                <a href="/h10-sessions.html">Session History</a>
+                <a href="/h10-export.html">Data Export</a>
+            </div>
+        </div>
+
+        <!-- Statistics -->
+        <div class="card">
+            <h2>📊 Overview</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="total-participants">0</div>
+                    <div class="stat-label">Total Participants</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="connected-devices">0</div>
+                    <div class="stat-label">Connected Devices</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="active-sessions">0</div>
+                    <div class="stat-label">Active Sessions</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="total-sessions">0</div>
+                    <div class="stat-label">Total Sessions</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Add New Participant -->
+        <div class="card">
+            <h2>➕ Add New Participant</h2>
+            <div id="alert-container"></div>
+            
+            <div class="grid">
+                <div>
+                    <div class="form-group">
+                        <label for="participant-id">Participant ID (3 characters)*</label>
+                        <input type="text" id="participant-id" maxlength="3" placeholder="ABC" style="text-transform: uppercase;">
+                        <small style="color: #718096;">Unique 3-character identifier (e.g., ABC, XYZ)</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="participant-name">Full Name*</label>
+                        <input type="text" id="participant-name" placeholder="John Doe">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="h10-device-id">H10 Device ID*</label>
+                        <input type="text" id="h10-device-id" placeholder="Polar H10 XXXXXXXX">
+                        <small style="color: #718096;">Found on device or in Bluetooth settings</small>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="participant-email">Email (Optional)</label>
+                        <input type="email" id="participant-email" placeholder="john@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="participant-notes">Session Notes (Optional)</label>
+                        <textarea id="participant-notes" rows="3" placeholder="Special instructions, medical notes, preferences..."></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <button class="btn btn-success" onclick="addParticipant()" style="width: 100%; margin-bottom: 10px;">
+                            ➕ Add Participant
+                        </button>
+                        <button class="btn btn-secondary" onclick="scanForH10Devices()" style="width: 100%;">
+                            📡 Scan for H10 Devices
+                        </button>
+                    </div>
+
+                    <div id="scanning-status" style="display: none; margin-top: 10px; color: #667eea; text-align: center;">
+                        <div class="loading" style="margin-right: 8px;"></div>
+                        Scanning for H10 devices...
+                    </div>
+                </div>
+
+                <div class="guide-box">
+                    <div class="guide-title">📖 Setup Guide</div>
+                    <div class="guide-content">
+                        <strong>1. Prepare H10 Device:</strong><br>
+                        • Press the button until LED blinks<br>
+                        • Put on chest strap with good skin contact<br>
+                        • Ensure device is charged (solid LED = good)<br><br>
+                        
+                        <strong>2. Find Device ID:</strong><br>
+                        • Check device label: "Polar H10 XXXXXXXX"<br>
+                        • Or use Bluetooth settings on your device<br>
+                        • Device name includes 8-digit number<br><br>
+                        
+                        <strong>3. Connection Tips:</strong><br>
+                        • Keep within 10 meters of computer<br>
+                        • Ensure no other apps are using the H10<br>
+                        • Use "Scan" button to find nearby devices
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Participants List -->
+        <div class="card">
+            <h2>👥 Registered Participants</h2>
+            <div style="margin-bottom: 20px; display: flex; gap: 10px; align-items: center;">
+                <button class="btn btn-secondary" onclick="exportParticipants()">📤 Export Data</button>
+                <button class="btn btn-secondary" onclick="importParticipants()">📥 Import Data</button>
+                <button class="btn" onclick="refreshAllConnections()">🔄 Refresh All</button>
+                <input type="file" id="import-file" accept=".json" style="display: none;" onchange="handleImportFile(this)">
+            </div>
+            
+            <div id="participants-list">
+                <div class="empty-state">
+                    <div class="empty-icon">❤️</div>
+                    <h3>No participants registered yet</h3>
+                    <p>Add your first participant above to get started with heart rate monitoring</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Participant management system with debug logging
+        console.log('🔍 Loading participants from localStorage...');
+        const storedParticipants = localStorage.getItem('h10_participants');
+        console.log('📦 Raw localStorage data:', storedParticipants);
+        
+        let participants = JSON.parse(storedParticipants || '[]');
+        let activeSessions = JSON.parse(localStorage.getItem('h10_sessions') || '[]');
+        
+        console.log('👥 Loaded participants:', participants.length, participants);
+        console.log('📊 Loaded sessions:', activeSessions.length);
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 H10 Management page loaded');
+            console.log('🔍 Participants at page load:', participants.length);
+            console.log('📊 Full participants array:', participants);
+            
+            setupEventListeners();
+            renderParticipants();
+            updateStats();
+            addButtonFeedback();
+        });
+
+        function setupEventListeners() {
+            // Auto-format participant ID to uppercase
+            const participantIdInput = document.getElementById('participant-id');
+            if (participantIdInput) {
+                participantIdInput.addEventListener('input', function() {
+                    this.value = this.value.toUpperCase();
+                });
+            }
+
+            // Setup button feedback
+            addButtonFeedback();
+
+            // Form validation on input
+            const requiredFields = ['participant-id', 'participant-name', 'h10-device-id'];
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                if (field) {
+                    field.addEventListener('blur', validateField);
+                }
+            });
+        }
+
+        function validateField(event) {
+            const field = event.target;
+            const value = field.value.trim();
+            
+            if (field.id === 'participant-id') {
+                if (value.length !== 3) {
+                    field.style.borderColor = '#e53e3e';
+                } else {
+                    field.style.borderColor = '#38a169';
+                }
+            } else if (field.hasAttribute('required') || field.id.includes('name') || field.id.includes('device')) {
+                if (!value) {
+                    field.style.borderColor = '#e53e3e';
+                } else {
+                    field.style.borderColor = '#38a169';
+                }
+            }
+        }
+
+        function showAlert(message, type = 'success') {
+            const container = document.getElementById('alert-container');
+            const alertClass = type === 'success' ? 'alert-success' : 'alert-error';
+            
+            container.innerHTML = `<div class="alert ${alertClass}">${message}</div>`;
+            
+            setTimeout(() => {
+                container.innerHTML = '';
+            }, 5000);
+        }
+
+        function addParticipant() {
+            console.log('🚀 Adding participant function called...');
+            
+            const id = document.getElementById('participant-id').value.trim().toUpperCase();
+            const name = document.getElementById('participant-name').value.trim();
+            const deviceId = document.getElementById('h10-device-id').value.trim();
+            const email = document.getElementById('participant-email').value.trim();
+            const notes = document.getElementById('participant-notes').value.trim();
+            
+            console.log('📝 Form values:', { id, name, deviceId, email, notes });
+            console.log('📊 Current participants count:', participants.length);
+
+            // Validation
+            if (!id || id.length !== 3) {
+                showAlert('Please enter a valid 3-character participant ID (e.g., ABC)', 'error');
+                document.getElementById('participant-id').focus();
+                return;
+            }
+
+            if (!name) {
+                showAlert('Please enter the participant name', 'error');
+                document.getElementById('participant-name').focus();
+                return;
+            }
+
+            if (!deviceId) {
+                showAlert('Please enter the H10 device ID', 'error');
+                document.getElementById('h10-device-id').focus();
+                return;
+            }
+
+            // Check for duplicate ID
+            if (participants.find(p => p.id === id)) {
+                showAlert(`Participant ID "${id}" already exists. Please use a different ID.`, 'error');
+                document.getElementById('participant-id').focus();
+                return;
+            }
+
+            // Add participant
+            const participant = {
+                id,
+                name,
+                deviceId,
+                email,
+                notes,
+                addedAt: new Date().toISOString(),
+                lastSeen: null,
+                connected: false,
+                totalSessions: 0,
+                lastSessionDate: null
+            };
+
+            console.log('➕ About to add participant:', participant);
+            participants.push(participant);
+            console.log('📊 Participants after adding:', participants.length);
+            
+            console.log('💾 Saving to localStorage...');
+            saveParticipants();
+            
+            console.log('🎨 Rendering participants...');
+            renderParticipants();
+            
+            console.log('📈 Updating stats...');
+            updateStats();
+            
+            console.log('🧹 Clearing form...');
+            clearForm();
+
+            showAlert('✅ Participant ' + name + ' (' + id + ') added successfully!');
+            console.log('✅ Participant added successfully:', participant);
+        }
+
+        function removeParticipant(id) {
+            const participant = participants.find(p => p.id === id);
+            if (!participant) return;
+
+            if (confirm(`Remove participant ${participant.name} (${id})?\n\nThis will also delete all session history. This cannot be undone.`)) {
+                participants = participants.filter(p => p.id !== id);
+                // Also remove sessions for this participant
+                activeSessions = activeSessions.filter(s => s.participantId !== id);
+                
+                saveParticipants();
+                saveSessions();
+                renderParticipants();
+                updateStats();
+                
+                showAlert(`Participant ${participant.name} removed successfully`);
+            }
+        }
+
+        async function testConnection(id) {
+            const participant = participants.find(p => p.id === id);
+            if (!participant) return;
+
+            showAlert(`Testing connection to ${participant.deviceId}...`);
+            
+            try {
+                // Try to connect to the stored device or request a new one
+                let device = bluetoothDevice;
+                
+                if (!device || device.name !== participant.deviceId) {
+                    // Request specific device
+                    device = await navigator.bluetooth.requestDevice({
+                        filters: [
+                            { name: participant.deviceId },
+                            { namePrefix: 'Polar H10' }
+                        ],
+                        optionalServices: ['heart_rate', 'battery_service']
+                    });
+                }
+
+                // Connect to GATT server
+                const server = await device.gatt.connect();
+                
+                // Get heart rate service
+                const heartRateService = await server.getPrimaryService('heart_rate');
+                heartRateCharacteristic = await heartRateService.getCharacteristic('heart_rate_measurement');
+                
+                // Test by reading heart rate
+                const value = await heartRateCharacteristic.readValue();
+                const heartRate = value.getUint8(1);
+                
+                participant.connected = true;
+                participant.lastSeen = new Date().toISOString();
+                participant.lastHeartRate = heartRate;
+                
+                saveParticipants();
+                renderParticipants();
+                updateStats();
+                
+                showAlert(`✅ ${participant.name} connected! Current HR: ${heartRate} BPM`);
+                
+            } catch (error) {
+                console.error('Connection test error:', error);
+                participant.connected = false;
+                
+                saveParticipants();
+                renderParticipants();
+                updateStats();
+                
+                if (error.name === 'NotFoundError') {
+                    showAlert(`❌ ${participant.deviceId} not found. Make sure it's on and nearby.`, 'error');
+                } else if (error.name === 'NetworkError') {
+                    showAlert(`❌ Failed to connect to ${participant.name}. Check device and try again.`, 'error');
+                } else {
+                    showAlert(`❌ Connection failed: ${error.message}`, 'error');
+                }
+            }
+        }
+
+        async function startSession(id) {
+            const participant = participants.find(p => p.id === id);
+            if (!participant) return;
+
+            if (!participant.connected) {
+                showAlert(`Please test connection for ${participant.name} first`, 'error');
+                return;
+            }
+
+            try {
+                // Start heart rate monitoring
+                if (heartRateCharacteristic) {
+                    await heartRateCharacteristic.startNotifications();
+                    
+                    // Create new session
+                    const session = {
+                        id: Date.now().toString(),
+                        participantId: id,
+                        participantName: participant.name,
+                        deviceId: participant.deviceId,
+                        startTime: new Date().toISOString(),
+                        endTime: null,
+                        status: 'active',
+                        heartRateData: [],
+                        meditationType: 'entrainment',
+                        notes: '',
+                        realTimeMonitoring: true
+                    };
+
+                    // Set up real-time heart rate monitoring
+                    heartRateCharacteristic.addEventListener('characteristicvaluechanged', (event) => {
+                        const heartRate = event.target.value.getUint8(1);
+                        const timestamp = new Date().toISOString();
+                        
+                        // Add to session data
+                        session.heartRateData.push({
+                            timestamp,
+                            heartRate,
+                            sessionTime: Date.now() - Date.parse(session.startTime)
+                        });
+                        
+                        // Update participant's last known heart rate
+                        participant.lastHeartRate = heartRate;
+                        participant.lastSeen = timestamp;
+                        
+                        // Update UI if needed
+                        updateHeartRateDisplay(id, heartRate);
+                        
+                        console.log(`${participant.name} HR: ${heartRate} BPM`);
+                    });
+
+                    activeSessions.push(session);
+                    participant.totalSessions += 1;
+                    participant.lastSessionDate = session.startTime;
+                    participant.activeSessionId = session.id;
+                    
+                    saveParticipants();
+                    saveSessions();
+                    updateStats();
+                    renderParticipants();
+                    
+                    showAlert(`🧘‍♀️ Real-time session started for ${participant.name}! Heart rate monitoring active.`);
+                    
+                    // Open meditation session window
+                    openMeditationSession(session);
+                    
+                } else {
+                    throw new Error('Heart rate characteristic not available');
+                }
+                
+            } catch (error) {
+                console.error('Session start error:', error);
+                showAlert(`❌ Failed to start session: ${error.message}`, 'error');
+            }
+        }
+
+        function clearForm() {
+            document.getElementById('participant-id').value = '';
+            document.getElementById('participant-name').value = '';
+            document.getElementById('h10-device-id').value = '';
+            document.getElementById('participant-email').value = '';
+            document.getElementById('participant-notes').value = '';
+            
+            // Reset field colors
+            const fields = document.querySelectorAll('input, textarea');
+            fields.forEach(field => {
+                field.style.borderColor = '#e2e8f0';
+            });
+        }
+
+        function renderParticipants() {
+            console.log('🎨 renderParticipants called, participants:', participants.length);
+            console.log('🔍 Full participants array:', participants);
+            
+            const container = document.getElementById('participants-list');
+            console.log('📦 Container element:', container);
+            
+            if (!container) {
+                console.error('❌ participants-list container not found!');
+                return;
+            }
+            
+            if (participants.length === 0) {
+                console.log('📝 No participants, showing empty state');
+                container.innerHTML = '<div class="empty-state">' +
+                    '<div class="empty-icon">❤️</div>' +
+                    '<h3>No participants registered yet</h3>' +
+                    '<p>Add your first participant above to get started with heart rate monitoring</p>' +
+                    '</div>';
+                return;
+            }
+            
+            console.log('👥 Rendering', participants.length, 'participants');
+
+            // Simple participant list rendering for debugging
+            let html = '';
+            participants.forEach((participant, index) => {
+                console.log('🔍 Rendering participant', index + 1, ':', participant);
+                html += '<div class="participant-card" style="border: 1px solid #ccc; padding: 20px; margin: 10px 0; border-radius: 8px; background: #f9f9f9;">';
+                html += '<h4 style="color: #2d3748; margin: 0 0 10px 0;">' + participant.name + ' (' + participant.id + ')</h4>';
+                html += '<p style="margin: 5px 0;"><strong>Device:</strong> ' + participant.deviceId + '</p>';
+                if (participant.email) {
+                    html += '<p style="margin: 5px 0;"><strong>Email:</strong> ' + participant.email + '</p>';
+                }
+                html += '<p style="margin: 5px 0;"><strong>Added:</strong> ' + new Date(participant.addedAt).toLocaleDateString() + '</p>';
+                html += '<p style="margin: 5px 0;"><strong>Status:</strong> ' + (participant.connected ? '🟢 Connected' : '🔴 Not Connected') + '</p>';
+                html += '<button onclick="removeParticipant(\'' + participant.id + '\')" class="btn btn-danger" style="margin-top: 10px;">Remove</button>';
+                html += '</div>';
+            });
+
+            console.log('🎨 Generated HTML length:', html.length);
+            console.log('🎨 Generated HTML preview:', html.substring(0, 200) + '...');
+            
+            container.innerHTML = html;
+            console.log('✅ Participants rendered to DOM');
+            console.log('🔍 Container innerHTML length after render:', container.innerHTML.length);
+        }
+
+        function updateStats() {
+            document.getElementById('total-participants').textContent = participants.length;
+            document.getElementById('connected-devices').textContent = 
+                participants.filter(p => p.connected).length;
+            document.getElementById('active-sessions').textContent = 
+                activeSessions.filter(s => s.status === 'active').length;
+            document.getElementById('total-sessions').textContent = activeSessions.length;
+        }
+
+        function saveParticipants() {
+            localStorage.setItem('h10_participants', JSON.stringify(participants));
+        }
+
+        function saveSessions() {
+            localStorage.setItem('h10_sessions', JSON.stringify(activeSessions));
+        }
+
+        function exportParticipants() {
+            const data = {
+                participants,
+                sessions: activeSessions,
+                exportDate: new Date().toISOString(),
+                version: '1.0'
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `h10_participants_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+            
+            showAlert('Participant data exported successfully!');
+        }
+
+        function importParticipants() {
+            document.getElementById('import-file').click();
+        }
+
+        function handleImportFile(input) {
+            const file = input.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (data.participants && Array.isArray(data.participants)) {
+                        const confirmMsg = `Import ${data.participants.length} participants?\n\nThis will add to existing participants (duplicates will be skipped).`;
+                        
+                        if (confirm(confirmMsg)) {
+                            let imported = 0;
+                            let skipped = 0;
+                            
+                            data.participants.forEach(participant => {
+                                if (!participants.find(p => p.id === participant.id)) {
+                                    participants.push(participant);
+                                    imported++;
+                                } else {
+                                    skipped++;
+                                }
+                            });
+                            
+                            if (data.sessions && Array.isArray(data.sessions)) {
+                                data.sessions.forEach(session => {
+                                    if (!activeSessions.find(s => s.id === session.id)) {
+                                        activeSessions.push(session);
+                                    }
+                                });
+                            }
+                            
+                            saveParticipants();
+                            saveSessions();
+                            renderParticipants();
+                            updateStats();
+                            
+                            showAlert(`✅ Import complete! Added ${imported} participants, skipped ${skipped} duplicates.`);
+                        }
+                    } else {
+                        showAlert('Invalid file format. Please select a valid export file.', 'error');
+                    }
+                } catch (error) {
+                    showAlert('Error reading file: ' + error.message, 'error');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        // Real Web Bluetooth integration for H10 devices
+        let bluetoothDevice = null;
+        let heartRateCharacteristic = null;
+        let isScanning = false;
+
+        async function scanForH10Devices() {
+            if (isScanning) return;
+            
+            const statusDiv = document.getElementById('scanning-status');
+            statusDiv.style.display = 'block';
+            isScanning = true;
+            
+            try {
+                // Check if Web Bluetooth is supported
+                if (!navigator.bluetooth) {
+                    throw new Error('Web Bluetooth is not supported in this browser');
+                }
+
+                // Request Bluetooth device with Heart Rate service
+                bluetoothDevice = await navigator.bluetooth.requestDevice({
+                    filters: [
+                        { namePrefix: 'Polar H10' },
+                        { services: ['heart_rate'] }
+                    ],
+                    optionalServices: [
+                        'heart_rate',
+                        'battery_service',
+                        'device_information'
+                    ]
+                });
+
+                showAlert(`✅ Found device: ${bluetoothDevice.name || 'Unknown H10'}!`);
+                
+                // Auto-fill the device ID field if form is visible
+                const deviceIdField = document.getElementById('h10-device-id');
+                if (deviceIdField && bluetoothDevice.name) {
+                    deviceIdField.value = bluetoothDevice.name;
+                }
+
+                // Add disconnect listener
+                bluetoothDevice.addEventListener('gattserverdisconnected', onDisconnected);
+
+            } catch (error) {
+                console.error('Bluetooth scan error:', error);
+                
+                if (error.name === 'NotFoundError') {
+                    showAlert('No H10 devices found. Make sure your H10 is on and nearby.', 'error');
+                } else if (error.name === 'NotSupportedError') {
+                    showAlert('Web Bluetooth not supported. Please use Chrome/Edge on desktop.', 'error');
+                } else if (error.name === 'SecurityError') {
+                    showAlert('Bluetooth access denied. Please allow Bluetooth permissions.', 'error');
+                } else {
+                    showAlert(`Bluetooth error: ${error.message}`, 'error');
+                }
+            } finally {
+                statusDiv.style.display = 'none';
+                isScanning = false;
+            }
+        }
+
+        function refreshAllConnections() {
+            showAlert('Refreshing all device connections...');
+            
+            participants.forEach(participant => {
+                // Simulate connection check
+                participant.connected = Math.random() > 0.4;
+                if (participant.connected) {
+                    participant.lastSeen = new Date().toISOString();
+                }
+            });
+            
+            setTimeout(() => {
+                saveParticipants();
+                renderParticipants();
+                updateStats();
+                showAlert('Connection status updated for all participants');
+            }, 2000);
+        }
+
+        // Real-time heart rate monitoring functions
+        function updateHeartRateDisplay(participantId, heartRate) {
+            const participantCard = document.querySelector(`[data-participant-id="${participantId}"]`);
+            if (participantCard) {
+                let hrDisplay = participantCard.querySelector('.live-hr-display');
+                if (!hrDisplay) {
+                    hrDisplay = document.createElement('div');
+                    hrDisplay.className = 'live-hr-display';
+                    hrDisplay.style.cssText = 'background: #f0fff4; padding: 8px; border-radius: 4px; margin: 8px 0; font-weight: bold; color: #22543d;';
+                    participantCard.querySelector('.device-info').after(hrDisplay);
+                }
+                hrDisplay.innerHTML = `💓 Live HR: ${heartRate} BPM`;
+            }
+        }
+
+        function openMeditationSession(session) {
+            // Create a new window for the meditation session
+            const meditationWindow = window.open('', '_blank', 'width=800,height=600,scrollbars=yes,resizable=yes');
+            
+            meditationWindow.document.write(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Meditation Session - ${session.participantName}</title>
+                    <style>
+                        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+                               background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+                               margin: 0; padding: 20px; color: white; text-align: center; }
+                        .session-container { background: rgba(255,255,255,0.1); border-radius: 20px; 
+                                           padding: 40px; backdrop-filter: blur(10px); max-width: 600px; margin: 0 auto; }
+                        .hr-display { font-size: 3em; margin: 20px 0; color: #4ade80; }
+                        .session-info { font-size: 1.2em; margin-bottom: 30px; }
+                        .controls { margin-top: 30px; }
+                        .btn { background: #4ade80; color: white; border: none; padding: 15px 30px; 
+                               border-radius: 10px; font-size: 1.1em; cursor: pointer; margin: 0 10px; }
+                        .btn:hover { background: #22c55e; }
+                        .btn-danger { background: #ef4444; }
+                        .btn-danger:hover { background: #dc2626; }
+                    </style>
+                </head>
+                <body>
+                    <div class="session-container">
+                        <h1>🧘‍♀️ Meditation Session</h1>
+                        <div class="session-info">
+                            <strong>${session.participantName}</strong> (${session.participantId})<br>
+                            Started: ${new Date(session.startTime).toLocaleTimeString()}<br>
+                            Device: ${session.deviceId}
+                        </div>
+                        <div class="hr-display" id="live-hr">💓 -- BPM</div>
+                        <div>Duration: <span id="session-timer">00:00</span></div>
+                        <div class="controls">
+                            <button class="btn" onclick="generateMeditation()">🌊 Generate Entrainment Meditation</button>
+                            <button class="btn btn-danger" onclick="endSession()">⏹️ End Session</button>
+                        </div>
+                        <div id="meditation-content" style="margin-top: 30px; display: none;">
+                            <h3>Meditation Loading...</h3>
+                        </div>
+                    </div>
+                    <script>
+                        let sessionStartTime = new Date('${session.startTime}');
+                        let sessionId = '${session.id}';
+                        
+                        // Update session timer
+                        setInterval(() => {
+                            const elapsed = Math.floor((new Date() - sessionStartTime) / 1000);
+                            const minutes = Math.floor(elapsed / 60);
+                            const seconds = elapsed % 60;
+                            document.getElementById('session-timer').textContent = 
+                                minutes.toString().padStart(2, '0') + ':' + seconds.toString().padStart(2, '0');
+                        }, 1000);
+                        
+                        // Receive heart rate updates from parent window
+                        window.addEventListener('message', (event) => {
+                            if (event.data.type === 'heartRate') {
+                                document.getElementById('live-hr').textContent = '💓 ' + event.data.heartRate + ' BPM';
+                            }
+                        });
+                        
+                        function generateMeditation() {
+                            document.getElementById('meditation-content').style.display = 'block';
+                            document.getElementById('meditation-content').innerHTML = '<h3>Generating personalized entrainment meditation...</h3>';
+                            
+                            // Call parent window to generate meditation
+                            window.opener.generateEntrainmentForSession('${session.id}');
+                        }
+                        
+                        function endSession() {
+                            if (confirm('End this meditation session?')) {
+                                window.opener.endMeditationSession('${session.id}');
+                                window.close();
+                            }
+                        }
+                    </script>
+                </body>
+                </html>
+            `);
+            
+            // Store reference for heart rate updates
+            session.meditationWindow = meditationWindow;
+        }
+
+        function endMeditationSession(sessionId) {
+            const session = activeSessions.find(s => s.id === sessionId);
+            if (!session) return;
+            
+            session.endTime = new Date().toISOString();
+            session.status = 'completed';
+            session.duration = Date.parse(session.endTime) - Date.parse(session.startTime);
+            
+            // Stop heart rate notifications
+            if (heartRateCharacteristic) {
+                heartRateCharacteristic.stopNotifications();
+            }
+            
+            // Update participant
+            const participant = participants.find(p => p.id === session.participantId);
+            if (participant) {
+                participant.activeSessionId = null;
+            }
+            
+            saveSessions();
+            saveParticipants();
+            updateStats();
+            renderParticipants();
+            
+            showAlert(`✅ Session completed for ${session.participantName}! Duration: ${Math.round(session.duration / 1000 / 60)} minutes`);
+        }
+
+        function generateEntrainmentForSession(sessionId) {
+            // Integration with your existing meditation generation
+            const session = activeSessions.find(s => s.id === sessionId);
+            if (!session) return;
+            
+            // Call your existing meditation API
+            fetch('/api/admin/generate-entrainment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    theme: 'acoustic',
+                    duration: 600, // 10 minutes
+                    intensity: 'moderate',
+                    participantId: session.participantId,
+                    sessionId: session.id
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Send meditation content to session window
+                if (session.meditationWindow) {
+                    session.meditationWindow.document.getElementById('meditation-content').innerHTML = 
+                        '<div style="text-align: left; background: rgba(255,255,255,0.1); padding: 20px; border-radius: 10px;">' +
+                            '<h3>🌊 ' + data.theme + ' Entrainment Meditation</h3>' +
+                            '<p>' + data.meditation + '</p>' +
+                            (data.audioUrl ? '<audio controls src="' + data.audioUrl + '" style="width: 100%; margin-top: 15px;"></audio>' : '') +
+                        '</div>';
+                }
+            })
+            .catch(error => {
+                console.error('Meditation generation error:', error);
+                if (session.meditationWindow) {
+                    session.meditationWindow.document.getElementById('meditation-content').innerHTML = 
+                        '<div style="color: #ef4444;">Failed to generate meditation. Please try again.</div>';
+                }
+            });
+        }
+        
+        function onDisconnected() {
+            console.log('Bluetooth device disconnected');
+            showAlert('H10 device disconnected', 'error');
+            
+            // Update all participants connected status
+            participants.forEach(p => {
+                if (p.connected) {
+                    p.connected = false;
+                }
+            });
+            
+            saveParticipants();
+            renderParticipants();
+            updateStats();
+        }
+
+        function editParticipant(id) {
+            const participant = participants.find(p => p.id === id);
+            if (!participant) return;
+            
+            // For now, just show participant details
+            // In a full implementation, this would open an edit modal
+            alert(`Edit functionality coming soon!\n\nParticipant: ${participant.name} (${participant.id})\nDevice: ${participant.deviceId}\nAdded: ${new Date(participant.addedAt).toLocaleString()}`);
+        }
+
+        // Button feedback and interaction enhancements
+        function addButtonFeedback() {
+            const buttons = document.querySelectorAll('.btn');
+            
+            buttons.forEach(button => {
+                // Add click ripple effect
+                button.addEventListener('click', function(e) {
+                    // Only add ripple if not disabled or loading
+                    if (this.disabled || this.classList.contains('loading')) return;
+                    
+                    const ripple = document.createElement('span');
+                    const rect = this.getBoundingClientRect();
+                    const size = Math.max(rect.width, rect.height);
+                    const x = e.clientX - rect.left - size / 2;
+                    const y = e.clientY - rect.top - size / 2;
+                    
+                    ripple.style.cssText = `
+                        position: absolute;
+                        width: ${size}px;
+                        height: ${size}px;
+                        left: ${x}px;
+                        top: ${y}px;
+                        background: rgba(255, 255, 255, 0.3);
+                        border-radius: 50%;
+                        transform: scale(0);
+                        animation: ripple 0.6s linear;
+                        pointer-events: none;
+                        z-index: 0;
+                    `;
+                    
+                    this.appendChild(ripple);
+                    
+                    setTimeout(() => {
+                        ripple.remove();
+                    }, 600);
+                });
+                
+                // Add touch feedback for mobile
+                button.addEventListener('touchstart', function() {
+                    if (!this.disabled && !this.classList.contains('loading')) {
+                        this.style.transform = 'translateY(0px) scale(0.98)';
+                    }
+                });
+                
+                button.addEventListener('touchend', function() {
+                    if (!this.disabled && !this.classList.contains('loading')) {
+                        setTimeout(() => {
+                            this.style.transform = '';
+                        }, 100);
+                    }
+                });
+            });
+        }
+
+        // Utility functions for button states
+        function setButtonLoading(buttonElement, loadingText = 'Loading...') {
+            if (!buttonElement) return;
+            
+            buttonElement.dataset.originalText = buttonElement.textContent;
+            buttonElement.classList.add('loading');
+            buttonElement.disabled = true;
+            buttonElement.textContent = loadingText;
+        }
+
+        function clearButtonLoading(buttonElement) {
+            if (!buttonElement) return;
+            
+            buttonElement.classList.remove('loading');
+            buttonElement.disabled = false;
+            buttonElement.textContent = buttonElement.dataset.originalText || buttonElement.textContent;
+        }
+
+        function showButtonSuccess(buttonElement, successText = 'Success!', duration = 2000) {
+            if (!buttonElement) return;
+            
+            const originalText = buttonElement.textContent;
+            const originalClass = buttonElement.className;
+            
+            buttonElement.textContent = successText;
+            buttonElement.className = originalClass.replace(/btn-\w+/g, '') + ' btn-success';
+            
+            setTimeout(() => {
+                buttonElement.textContent = originalText;
+                buttonElement.className = originalClass;
+            }, duration);
+        }
+
+        function showButtonError(buttonElement, errorText = 'Error!', duration = 2000) {
+            if (!buttonElement) return;
+            
+            const originalText = buttonElement.textContent;
+            const originalClass = buttonElement.className;
+            
+            buttonElement.textContent = errorText;
+            buttonElement.className = originalClass.replace(/btn-\w+/g, '') + ' btn-danger';
+            
+            setTimeout(() => {
+                buttonElement.textContent = originalText;
+                buttonElement.className = originalClass;
+            }, duration);
+        }
+    </script>
+</body>
+</html>

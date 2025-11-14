@@ -1,0 +1,41 @@
+MOCK AUDIO FILE
+Generated: 2025-11-10T19:03:11.077Z
+Session: entrainment-movement-1762801391077
+Text Length: 3554 characters
+Voice: en-GB-RyanNeural (British Documentary Style)
+
+MEDITATION CONTENT:
+10-Minute Guided Meditation on Movement Rhythms
+
+Opening (2 minutes):
+Begin by settling into a comfortable seated position. Feel the connection of your body to the earth beneath you. Take a deep breath in through your nose, and exhale slowly through your mouth. Allow your body to relax and your mind to become calm and focused.
+
+As you continue to breathe naturally, become aware of the rhythm of your breath. Notice how each inhalation and exhalation flows in a natural, synchronized pattern. This is an example of entrainment - the tendency of coupled oscillating systems to synchronize their rhythms through interaction and feedback.
+
+Just as your breath synchronizes, many organisms in nature exhibit remarkable movement coordination. Imagine a flock of birds soaring through the sky, their wings flapping in unison as they shift and turn as one. Or a school of fish, darting and weaving through the water in perfect harmony. These are examples of collective motion dynamics - the emergent coordination that arises from simple, local interaction rules.
+
+Core Practice (7 minutes):
+Now, in your mind's eye, envision yourself as part of a flock of birds. Feel the gentle flapping of your wings as you ride the currents of air. Notice how each bird subtly adjusts its speed and direction to match its neighbors, creating a wave of synchronized movement through the entire flock.
+
+As the flock moves as one, pay attention to the feedback loop that allows this coordination to arise. Each bird is continuously sensing the movements of its neighbors, making small adjustments to its own velocity and orientation. Through this process of local interaction and information sharing, the flock is able to maintain its cohesive, flowing pattern of motion.
+
+Imagine the flock suddenly shifting direction, banking and turning as a unified whole. Feel the flow of your own movements, aligning with the collective rhythm. Notice how your individual actions both influence and are influenced by the larger group dynamic.
+
+Deepening (1 minute):
+Expand your awareness to consider the broader principles at play. Recognize that this type of synchronized movement is not unique to birds, but can be observed in a wide variety of natural systems - from schooling fish and swarming insects to migrating herds and even bacterial colonies.
+
+These collective motion patterns emerge from the simple, local interaction rules that govern the behavior of each individual organism. Through velocity matching, directional alignment, and other feedback mechanisms, the system as a whole self-organizes into a coordinated, flowing state.
+
+Integration (1 minute):
+As you continue to feel the rhythm of the flock, observe how your own breath and bodily movements have synchronized with the collective motion. Recognize that you are not separate from these natural entrainment patterns, but rather an integral part of the interconnected web of life.
+
+Carry this awareness of movement coordination and collective intelligence with you as you return to the world. Notice the rhythms and patterns that emerge in your daily activities, and how you can align with and contribute to these natural synchronization processes.
+
+Closing (1 minute):
+Gently open your eyes and take a moment to reflect on the experience. Feel the sense of flow, connection, and belonging that comes from aligning with the rhythms of the natural world. Carry this embodied understanding of entrainment and collective motion with you, as a reminder of your deep integration with the living systems that surround you.
+
+[This is a development placeholder. To enable real TTS audio:
+1. Get Azure Cognitive Services TTS API key
+2. Add AZURE_TTS_API_KEY=your_key to .env
+3. Add AZURE_TTS_REGION=eastus to .env
+4. Restart server]

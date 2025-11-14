@@ -4,7 +4,7 @@ const RobustSpeciesService = require('./RobustSpeciesService');
 const ContentGenerationService = require('./ContentGenerationService');
 const LunarService = require('./LunarService');
 const BehaviorDatabase = require('./BehaviorDatabase');
-const TTSService = require('./TTSService');
+const { getInstance: getTTSService } = require('./TTSService');
 const logger = require('../utils/logger');
 const moment = require('moment-timezone');
 
@@ -15,7 +15,7 @@ class SessionManager {
     this.contentService = new ContentGenerationService();
     this.lunarService = new LunarService();
     this.behaviorDatabase = new BehaviorDatabase();
-    this.ttsService = new TTSService();
+    this.ttsService = getTTSService();
     this.activeSessions = new Map();
   }
 

@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>H10 Function Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        input { padding: 8px; margin: 5px; width: 200px; border: 1px solid #ccc; border-radius: 4px; }
+        #log { background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 4px; font-family: monospace; height: 400px; overflow-y: auto; border: 1px solid #ddd; }
+        .form-group { margin: 10px 0; }
+        label { display: block; font-weight: bold; margin-bottom: 5px; }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <div style="background: #f8f9fa; padding: 15px; margin-bottom: 20px; border-radius: 8px; border: 1px solid #dee2e6;">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <a href="/" style="color: #495057; text-decoration: none; padding: 8px 16px; background: #007bff; color: white; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='#0056b3'" onmouseout="this.style.background='#007bff'">
+                    🏠 Momentus Home
+                </a>
+                <a href="/h10-simple-management.html" style="color: #495057; text-decoration: none; padding: 8px 16px; background: #6c757d; color: white; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='#545b62'" onmouseout="this.style.background='#6c757d'">
+                    👥 Manage Participants
+                </a>
+                <a href="/h10-biometric-dashboard.html" style="color: #495057; text-decoration: none; padding: 8px 16px; background: #28a745; color: white; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='#1e7e34'" onmouseout="this.style.background='#28a745'">
+                    📊 Biometric Analysis
+                </a>
+                <a href="/admin.html" style="color: #495057; text-decoration: none; padding: 8px 16px; background: #6c757d; color: white; border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='#545b62'" onmouseout="this.style.background='#6c757d'">
+                    ⚙️ Admin
+                </a>
+            </div>
+            <div style="color: #6c757d; font-size: 14px;">
+                H10 Function Testing
+            </div>
+        </div>
+    </div>
+
+    <h1>🔍 H10 Function Call Test</h1>
+
+    <div class="test">
+        <h3>Test the Original H10 Management Page Function</h3>
+        
+        <div class="form-group">
+            <label for="participant-id">Participant ID (3 characters)*</label>
+            <input type="text" id="participant-id" maxlength="3" placeholder="ABC" style="text-transform: uppercase;">
+        </div>
+
+        <div class="form-group">
+            <label for="participant-name">Full Name*</label>
+            <input type="text" id="participant-name" placeholder="John Doe">
+        </div>
+
+        <div class="form-group">
+            <label for="h10-device-id">H10 Device ID*</label>
+            <input type="text" id="h10-device-id" placeholder="Polar H10 XXXXXXXX">
+        </div>
+
+        <div class="form-group">
+            <label for="participant-email">Email (Optional)</label>
+            <input type="email" id="participant-email" placeholder="john@example.com">
+        </div>
+
+        <div class="form-group">
+            <label for="participant-notes">Session Notes (Optional)</label>
+            <textarea id="participant-notes" rows="3" placeholder="Special instructions..."></textarea>
+        </div>
+
+        <button onclick="testAddParticipant()">🧪 Test Add Function</button>
+        <button onclick="openOriginalPage()">🔗 Open Original Page</button>
+        <button onclick="clearTestStorage()">🧹 Clear Storage</button>
+        <button onclick="showStoredParticipants()">👀 View Stored</button>
+    </div>
+
+    <div class="test">
+        <h3>Debug Log</h3>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        let participants = [];
+
+        function log(message) {
+            console.log(message);
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            logDiv.innerHTML += timestamp + ': ' + message + '<br>';
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function showAlert(message, type = 'success') {
+            log('🚨 Alert: ' + message + ' (type: ' + type + ')');
+            alert(message);
+        }
+
+        function saveParticipants() {
+            localStorage.setItem('h10_participants', JSON.stringify(participants));
+            log('💾 Saved ' + participants.length + ' participants to localStorage');
+        }
+
+        function renderParticipants() {
+            log('🎨 renderParticipants called - would update UI with ' + participants.length + ' participants');
+        }
+
+        function updateStats() {
+            log('📈 updateStats called - would update statistics');
+        }
+
+        function clearForm() {
+            document.getElementById('participant-id').value = '';
+            document.getElementById('participant-name').value = '';
+            document.getElementById('h10-device-id').value = '';
+            document.getElementById('participant-email').value = '';
+            document.getElementById('participant-notes').value = '';
+            log('🧹 Form cleared');
+        }
+
+        // Copy the exact addParticipant function from h10-management.html
+        function addParticipant() {
+            console.log('🚀 Adding participant function called...');
+            log('🚀 Adding participant function called...');
+            
+            const id = document.getElementById('participant-id').value.trim().toUpperCase();
+            const name = document.getElementById('participant-name').value.trim();
+            const deviceId = document.getElementById('h10-device-id').value.trim();
+            const email = document.getElementById('participant-email').value.trim();
+            const notes = document.getElementById('participant-notes').value.trim();
+            
+            console.log('📝 Form values:', { id, name, deviceId, email, notes });
+            log('📝 Form values: id=' + id + ', name=' + name + ', deviceId=' + deviceId);
+            log('📊 Current participants count: ' + participants.length);
+
+            // Validation
+            if (!id || id.length !== 3) {
+                showAlert('Please enter a valid 3-character participant ID (e.g., ABC)', 'error');
+                document.getElementById('participant-id').focus();
+                return;
+            }
+
+            if (!name) {
+                showAlert('Please enter the participant name', 'error');
+                document.getElementById('participant-name').focus();
+                return;
+            }
+
+            if (!deviceId) {
+                showAlert('Please enter the H10 device ID', 'error');
+                document.getElementById('h10-device-id').focus();
+                return;
+            }
+
+            // Check for duplicate ID
+            if (participants.find(p => p.id === id)) {
+                showAlert(`Participant ID "${id}" already exists. Please use a different ID.`, 'error');
+                document.getElementById('participant-id').focus();
+                return;
+            }
+
+            // Add participant
+            const participant = {
+                id,
+                name,
+                deviceId,
+                email,
+                notes,
+                addedAt: new Date().toISOString(),
+                lastSeen: null,
+                connected: false,
+                totalSessions: 0,
+                lastSessionDate: null
+            };
+
+            console.log('➕ About to add participant:', participant);
+            log('➕ About to add participant: ' + JSON.stringify(participant));
+            participants.push(participant);
+            log('📊 Participants after adding: ' + participants.length);
+            
+            log('💾 Saving to localStorage...');
+            saveParticipants();
+            
+            log('🎨 Rendering participants...');
+            renderParticipants();
+            
+            log('📈 Updating stats...');
+            updateStats();
+            
+            log('🧹 Clearing form...');
+            clearForm();
+
+            showAlert('✅ Participant ' + name + ' (' + id + ') added successfully!');
+            log('✅ Participant added successfully: ' + participant.name);
+        }
+
+        function testAddParticipant() {
+            log('🧪 Starting addParticipant test...');
+            
+            // Generate unique ID for testing
+            const uniqueId = 'T' + Math.floor(Math.random() * 100).toString().padStart(2, '0');
+            
+            // Pre-fill form for testing
+            document.getElementById('participant-id').value = uniqueId;
+            document.getElementById('participant-name').value = 'Test User ' + uniqueId;
+            document.getElementById('h10-device-id').value = 'Polar H10 ' + Date.now().toString().slice(-8);
+            document.getElementById('participant-email').value = 'test' + uniqueId.toLowerCase() + '@example.com';
+            
+            log('📝 Pre-filled form with unique test data: ID=' + uniqueId);
+            
+            // Call the function
+            addParticipant();
+        }
+
+        function openOriginalPage() {
+            window.open('/h10-management.html', '_blank');
+            log('🔗 Opened original H10 management page');
+        }
+
+        function clearTestStorage() {
+            localStorage.removeItem('h10_participants');
+            localStorage.removeItem('h10_sessions');
+            participants = [];
+            log('🧹 Cleared all test storage');
+        }
+
+        function showStoredParticipants() {
+            log('👀 Showing stored participants...');
+            const stored = localStorage.getItem('h10_participants');
+            if (stored) {
+                try {
+                    const storedParticipants = JSON.parse(stored);
+                    log('📊 Found ' + storedParticipants.length + ' stored participants:');
+                    storedParticipants.forEach((p, index) => {
+                        log('  ' + (index + 1) + '. ' + p.name + ' (' + p.id + ') - ' + p.deviceId);
+                    });
+                } catch (e) {
+                    log('❌ Error parsing stored participants: ' + e.message);
+                }
+            } else {
+                log('📝 No participants found in storage');
+            }
+        }
+
+        // Load existing participants on startup
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 H10 Function Test loaded');
+            
+            const stored = localStorage.getItem('h10_participants');
+            if (stored) {
+                try {
+                    participants = JSON.parse(stored);
+                    log('📂 Loaded ' + participants.length + ' existing participants');
+                } catch (e) {
+                    log('❌ Error loading participants: ' + e.message);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

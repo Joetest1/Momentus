@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>H10 Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { border: 1px solid #ccc; padding: 15px; margin: 15px 0; border-radius: 8px; }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 15px; margin: 5px; }
+        input { padding: 8px; margin: 5px; width: 150px; }
+        #output { font-family: monospace; background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 H10 Management Debug Test</h1>
+    
+    <div class="test-section">
+        <h2>1. JavaScript Syntax Test</h2>
+        <button onclick="testSyntax()">Test H10 Page JavaScript</button>
+        <div id="syntax-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>2. Participant Storage Test</h2>
+        <div>
+            <input type="text" id="test-id" placeholder="ID (3 chars)" maxlength="3">
+            <input type="text" id="test-name" placeholder="Name">
+            <input type="text" id="test-device" placeholder="Device ID">
+            <button onclick="testAddParticipant()">Add Test Participant</button>
+            <button onclick="viewParticipants()">View Participants</button>
+            <button onclick="clearParticipants()">Clear All</button>
+        </div>
+        <div id="participant-result"></div>
+    </div>
+    
+    <div class="test-section">
+        <h2>3. H10 Page Direct Test</h2>
+        <button onclick="openH10Page()">Open H10 Management Page</button>
+        <div id="h10-result"></div>
+    </div>
+    
+    <div id="output"></div>
+
+    <script>
+        function log(message) {
+            const output = document.getElementById('output');
+            output.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+        }
+
+        function testSyntax() {
+            log('Testing H10 page JavaScript syntax...');
+            
+            fetch('/h10-management.html')
+                .then(response => response.text())
+                .then(html => {
+                    const scriptMatch = html.match(/<script[^>]*>([\s\S]*?)<\/script>/);
+                    if (scriptMatch) {
+                        try {
+                            new Function(scriptMatch[1]);
+                            document.getElementById('syntax-result').innerHTML = '<div class="success">✅ JavaScript syntax is valid</div>';
+                            log('JavaScript syntax: VALID');
+                        } catch (e) {
+                            document.getElementById('syntax-result').innerHTML = '<div class="error">❌ JavaScript syntax error: ' + e.message + '</div>';
+                            log('JavaScript syntax: ERROR - ' + e.message);
+                        }
+                    } else {
+                        document.getElementById('syntax-result').innerHTML = '<div class="error">❌ No script tag found</div>';
+                        log('JavaScript syntax: NO SCRIPT FOUND');
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('syntax-result').innerHTML = '<div class="error">❌ Failed to load page: ' + error.message + '</div>';
+                    log('JavaScript syntax: LOAD ERROR - ' + error.message);
+                });
+        }
+
+        function testAddParticipant() {
+            const id = document.getElementById('test-id').value.trim().toUpperCase() || 'TST';
+            const name = document.getElementById('test-name').value.trim() || 'Test User';
+            const device = document.getElementById('test-device').value.trim() || 'test-device-123';
+            
+            log('Adding test participant: ' + name + ' (' + id + ')');
+            
+            // Clear and add test participant
+            localStorage.removeItem('h10_participants');
+            
+            const participant = {
+                id: id,
+                name: name,
+                deviceId: device,
+                addedAt: new Date().toISOString(),
+                connected: false,
+                totalSessions: 0
+            };
+            
+            const participants = [participant];
+            localStorage.setItem('h10_participants', JSON.stringify(participants));
+            
+            // Verify
+            const stored = localStorage.getItem('h10_participants');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (parsed.length === 1 && parsed[0].id === id) {
+                    document.getElementById('participant-result').innerHTML = '<div class="success">✅ Participant added and stored successfully</div>';
+                    log('Participant storage: SUCCESS');
+                } else {
+                    document.getElementById('participant-result').innerHTML = '<div class="error">❌ Data mismatch in storage</div>';
+                    log('Participant storage: DATA MISMATCH');
+                }
+            } else {
+                document.getElementById('participant-result').innerHTML = '<div class="error">❌ Failed to store participant</div>';
+                log('Participant storage: FAILED');
+            }
+        }
+
+        function viewParticipants() {
+            const stored = localStorage.getItem('h10_participants');
+            if (stored) {
+                try {
+                    const participants = JSON.parse(stored);
+                    document.getElementById('participant-result').innerHTML = 
+                        '<div class="success">📝 Found ' + participants.length + ' participants: ' + 
+                        participants.map(p => p.name + ' (' + p.id + ')').join(', ') + '</div>';
+                    log('Participants found: ' + participants.length);
+                } catch (e) {
+                    document.getElementById('participant-result').innerHTML = '<div class="error">❌ Invalid data in storage</div>';
+                    log('Participants: INVALID DATA');
+                }
+            } else {
+                document.getElementById('participant-result').innerHTML = '<div>📝 No participants found</div>';
+                log('Participants: NONE FOUND');
+            }
+        }
+
+        function clearParticipants() {
+            localStorage.removeItem('h10_participants');
+            localStorage.removeItem('h10_sessions');
+            document.getElementById('participant-result').innerHTML = '<div>🧹 Storage cleared</div>';
+            log('Storage cleared');
+        }
+
+        function openH10Page() {
+            window.open('/h10-management.html', '_blank');
+            document.getElementById('h10-result').innerHTML = '<div class="success">✅ H10 Management page opened in new tab</div>';
+            log('H10 page opened');
+        }
+
+        // Auto-run syntax test on load
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Debug test page loaded');
+            setTimeout(testSyntax, 500);
+        });
+    </script>
+</body>
+</html>

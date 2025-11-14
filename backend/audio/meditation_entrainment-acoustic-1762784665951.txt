@@ -1,0 +1,39 @@
+MOCK AUDIO FILE
+Generated: 2025-11-10T14:24:25.951Z
+Session: entrainment-acoustic-1762784665951
+Text Length: 2619 characters
+Voice: en-GB-RyanNeural (British Documentary Style)
+
+MEDITATION CONTENT:
+Here is a 3-minute guided meditation focused on natural entrainment and synchronization patterns, specifically acoustic rhythms:
+
+Opening (1 minute)
+Begin by settling into a comfortable position. Close your eyes and bring your attention inward. Feel the weight of your body sinking into the earth, grounded and supported. 
+
+Now, tune in to the rhythm of your breath. Notice the natural rise and fall, the ebb and flow of each inhalation and exhalation. Like the tides of the ocean, your breath moves in a steady, synchronized pattern.
+
+Just as your breath organizes itself into a rhythmic dance, so too do the natural world and all living things. From the blinking light waves of Southeast Asian fireflies to the synchronized choruses of male crickets, the universe is alive with synchronized, phase-locked oscillations. 
+
+Imagine those fireflies, flashing in harmony, their collective bioluminescence creating a mesmerizing light show. What unseen forces coordinate their movements, aligning them into a unified display? 
+
+Core Practice (1 minute)
+Now, turn your attention to the subtle sounds around you. Listen closely, and you may begin to discern intricate layers of natural rhythms - the beating of your own heart, the rustling of leaves, the distant hum of insects. All of these acoustic patterns are engaged in a dance of harmonic resonance, each vibration attuning to the next.
+
+As you continue to listen, feel how your own body responds to these environmental cues. Does your breath naturally begin to synchronize with the rhythms you hear? Can you sense your heartbeat aligning with the pulse of the Earth?
+
+Deepening (30 seconds)
+Delve deeper into the science of natural synchronization. Picture the feedback loops and coupled oscillators that link all these acoustic patterns together. Imagine the thresholds of coupling strength that allow these complex systems to fall into phase, coordinating their rhythms with effortless grace.
+
+Integration (30 seconds)
+Recognize that you, too, are an integral part of this interconnected web of vibrations. Your personal rhythms - your breath, your heartbeat, your very neural impulses - are all entrained with the larger symphony of life. 
+
+Closing (30 seconds)
+As you prepare to return your awareness to the present moment, carry this sense of synchronization with you. Know that you are in harmonic resonance with the natural world, a part of the great rhythmic dance of the universe. Let this awareness infuse your day, attuning you to the subtle, synchronized patterns that surround you.
+
+When you're ready, gently open your eyes, feeling refreshed and aligned.
+
+[This is a development placeholder. To enable real TTS audio:
+1. Get Azure Cognitive Services TTS API key
+2. Add AZURE_TTS_API_KEY=your_key to .env
+3. Add AZURE_TTS_REGION=eastus to .env
+4. Restart server]

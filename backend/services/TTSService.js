@@ -1,18 +1,16 @@
 // services/TTSService.js
-const axios = require('axios');
+const textToSpeech = require('@google-cloud/text-to-speech');
 const fs = require('fs').promises;
 const path = require('path');
 const logger = require('../utils/logger');
 
 /**
  * TTSService - Text-to-Speech for meditation audio
- * Uses Azure Cognitive Services TTS with natural British male voice
+ * Uses Google Cloud Text-to-Speech with natural British male voice
  */
 class TTSService {
   constructor() {
-    this.apiKey = process.env.AZURE_TTS_API_KEY || null;
-    this.region = process.env.AZURE_TTS_REGION || 'eastus';
-    this.endpoint = `https://${this.region}.tts.speech.microsoft.com/cognitiveservices/v1`;
+    this.client = null;
     this.audioDir = path.join(__dirname, '../audio');
     this.isEnabled = false;
     this.initializeTTS();
@@ -30,14 +28,22 @@ class TTSService {
       // Create audio directory if it doesn't exist
       await fs.mkdir(this.audioDir, { recursive: true });
 
-      if (!this.apiKey) {
-        logger.warn('Azure TTS API key not configured, audio generation disabled');
-        this.isEnabled = false;
-        return;
+      // Initialize Google Cloud TTS client
+      try {
+        this.client = new textToSpeech.TextToSpeechClient();
+        
+        // Test the client with a simple request to verify credentials
+        await this.client.listVoices({ languageCode: 'en-GB' });
+        
+        this.isEnabled = true;
+        logger.info('TTS Service initialized successfully with Google Cloud Text-to-Speech');
+      } catch (authError) {
+        logger.warn('Google Cloud TTS credentials not configured, using mock TTS for development', {
+          error: authError.message
+        });
+        this.client = null;
+        this.isEnabled = true; // Enable mock TTS
       }
-
-      this.isEnabled = true;
-      logger.info('TTS Service initialized successfully with Azure Cognitive Services');
     } catch (error) {
       logger.warn('TTS Service initialization failed, audio generation disabled', {
         error: error.message
@@ -52,69 +58,78 @@ class TTSService {
    * @param {string} sessionId - Session ID for file naming
    * @returns {Promise<Object>} Audio file info
    */
-  async generateAudio(text, sessionId) {
+  async generateAudio(text, options = {}) {
     if (!this.isEnabled) {
-      logger.debug('TTS not enabled, skipping audio generation');
-      return null;
+      throw new Error('TTS Service is not enabled');
     }
 
+    const {
+      voice = 'en-GB-Standard-B', // Google Cloud male British voice
+      speed = 0.9,
+      pitch = 0,
+      outputFormat = 'MP3'
+    } = options;
+
     try {
-      // Prepare text for TTS (convert to SSML with pauses)
-      const ssmlText = this.prepareTextForTTS(text);
-
-      // Azure TTS request with British male voice (Ryan - natural, documentary-style)
-      const ssml = `<speak version='1.0' xml:lang='en-GB'>
-        <voice name='en-GB-RyanNeural'>
-          <prosody rate='0.85' pitch='-5%'>
-            ${ssmlText}
-          </prosody>
-        </voice>
-      </speak>`;
-
-      // Make request to Azure TTS API
-      const response = await axios.post(
-        this.endpoint,
-        ssml,
-        {
-          headers: {
-            'Ocp-Apim-Subscription-Key': this.apiKey,
-            'Content-Type': 'application/ssml+xml',
-            'X-Microsoft-OutputFormat': 'audio-24khz-48kbitrate-mono-mp3'
-          },
-          responseType: 'arraybuffer',
-          timeout: 60000
-        }
-      );
-
-      // Save audio file
-      const filename = `meditation_${sessionId}.mp3`;
-      const filepath = path.join(this.audioDir, filename);
-      await fs.writeFile(filepath, Buffer.from(response.data));
-
-      logger.info('Audio generated successfully with Azure TTS', {
-        sessionId,
-        filename,
-        size: response.data.byteLength,
-        voice: 'en-GB-RyanNeural'
+      logger.debug('Generating audio with Google Cloud TTS', {
+        voice,
+        speed,
+        pitch,
+        textLength: text.length
       });
 
-      return {
-        filename,
-        filepath,
-        url: `/audio/${filename}`,
-        size: response.data.byteLength,
-        duration: this.estimateDuration(text),
-        voice: 'en-GB-RyanNeural'
-      };
+      // Use Google Cloud TTS if client is available
+      if (this.client) {
+        const request = {
+          input: { text },
+          voice: {
+            languageCode: 'en-GB',
+            name: voice,
+            ssmlGender: 'MALE'
+          },
+          audioConfig: {
+            audioEncoding: outputFormat,
+            speakingRate: speed,
+            pitch: pitch
+          }
+        };
+
+        const [response] = await this.client.synthesizeSpeech(request);
+        const audioData = response.audioContent;
+        
+        const filename = `meditation_${Date.now()}.mp3`;
+        const filepath = path.join(this.audioDir, filename);
+
+        await fs.writeFile(filepath, audioData, 'binary');
+
+        logger.info('Audio generated successfully with Google Cloud TTS', {
+          filename,
+          size: audioData.length,
+          voice
+        });
+
+        return {
+          filename,
+          filepath,
+          size: audioData.length,
+          duration: this.estimateDuration(text)
+        };
+      }
+
+      // Fallback to mock TTS if Google Cloud is not configured
+      logger.info('Google Cloud TTS not available, using mock audio generation');
+      return await this.generateMockAudio(text, voice);
 
     } catch (error) {
-      logger.error('Audio generation failed with Azure TTS', {
-        sessionId,
+      logger.error('Audio generation failed', {
         error: error.message,
-        status: error.response?.status,
-        statusText: error.response?.statusText
+        voice,
+        textLength: text.length
       });
-      return null;
+
+      // Fallback to mock audio on error
+      logger.info('Falling back to mock audio generation');
+      return await this.generateMockAudio(text, voice);
     }
   }
 
@@ -209,13 +224,124 @@ class TTSService {
     }
   }
 
+  /**
+   * Generate mock audio file for development when Azure TTS is not configured
+   * @param {string} text - The meditation text
+   * @param {string} sessionId - Session ID for file naming
+   * @returns {Promise<Object>} Mock audio file info
+   */
+  async generateMockAudio(text, sessionId) {
+    try {
+      // Calculate duration first
+      const estimatedDuration = this.estimateDuration(text);
+      const audioDuration = Math.max(estimatedDuration, 30); // At least 30 seconds
+      
+      // Create both a text file for the script and a simple WAV file for the audio player
+      const baseFilename = `meditation_${sessionId}`;
+      const txtFilename = `${baseFilename}.txt`;
+      const wavFilename = `${baseFilename}.wav`;
+      const txtFilepath = path.join(this.audioDir, txtFilename);
+      const wavFilepath = path.join(this.audioDir, wavFilename);
+      
+      // Create a text file with the script
+      const mockContent = `MOCK AUDIO FILE - DEVELOPMENT MODE
+Generated: ${new Date().toISOString()}
+Session: ${sessionId}
+Text Length: ${text.length} characters
+Estimated Duration: ${audioDuration} seconds (${Math.round(audioDuration/60)} minutes)
+Voice: en-GB-RyanNeural (British Documentary Style)
+
+AUDIO EXPERIENCE:
+The WAV file contains ${audioDuration} seconds of silence as a placeholder.
+In production with Azure TTS, this would be a full spoken meditation
+with natural British male voice, documentary-style pacing, and proper
+meditation pauses and breathing spaces.
+
+MEDITATION CONTENT THAT WOULD BE SPOKEN:
+${text}
+
+[TO ENABLE REAL TTS AUDIO:
+1. Get Azure Cognitive Services TTS API key from Microsoft Azure
+2. Add AZURE_TTS_API_KEY=your_key to .env file
+3. Add AZURE_TTS_REGION=eastus to .env file  
+4. Restart server
+5. The same meditation will then generate with full voice narration]`;
+
+      await fs.writeFile(txtFilepath, mockContent, 'utf8');
+
+      // Create a WAV file with silence matching the meditation duration
+      const sampleRate = 44100;
+      const duration = audioDuration; // Use the calculated duration from above
+      const numSamples = sampleRate * duration;
+      const numChannels = 1;
+      const bytesPerSample = 2;
+      
+      const bufferSize = 44 + (numSamples * numChannels * bytesPerSample);
+      const buffer = Buffer.alloc(bufferSize);
+      
+      // WAV header
+      buffer.write('RIFF', 0);
+      buffer.writeUInt32LE(bufferSize - 8, 4);
+      buffer.write('WAVE', 8);
+      buffer.write('fmt ', 12);
+      buffer.writeUInt32LE(16, 16); // PCM format chunk size
+      buffer.writeUInt16LE(1, 20);  // PCM format
+      buffer.writeUInt16LE(numChannels, 22);
+      buffer.writeUInt32LE(sampleRate, 24);
+      buffer.writeUInt32LE(sampleRate * numChannels * bytesPerSample, 28);
+      buffer.writeUInt16LE(numChannels * bytesPerSample, 32);
+      buffer.writeUInt16LE(bytesPerSample * 8, 34);
+      buffer.write('data', 36);
+      buffer.writeUInt32LE(numSamples * numChannels * bytesPerSample, 40);
+      
+      // Fill with silence (zeros)
+      buffer.fill(0, 44);
+      
+      await fs.writeFile(wavFilepath, buffer);
+
+      logger.info('Mock audio files generated for development', {
+        sessionId,
+        txtFilename,
+        wavFilename,
+        textLength: text.length
+      });
+
+      return {
+        filename: wavFilename,
+        filepath: wavFilepath,
+        url: `/audio/${wavFilename}`,
+        size: buffer.length,
+        duration: this.estimateDuration(text),
+        voice: 'mock-en-GB-RyanNeural',
+        isMock: true,
+        scriptUrl: `/audio/${txtFilename}`
+      };
+
+    } catch (error) {
+      logger.error('Mock audio generation failed', { sessionId, error: error.message });
+      return null;
+    }
+  }
+
   getStats() {
     return {
-      enabled: !!this.client,
-      voice: 'en-GB-Wavenet-B (David Attenborough style)',
-      audioDir: this.audioDir
+      enabled: this.isEnabled,
+      voice: this.apiKey ? 'en-GB-RyanNeural (Azure TTS)' : 'Mock TTS for Development',
+      audioDir: this.audioDir,
+      hasAzureKey: !!this.apiKey
     };
   }
 }
 
-module.exports = TTSService;
+// Singleton instance
+let instance = null;
+
+module.exports = {
+  getInstance: () => {
+    if (!instance) {
+      instance = new TTSService();
+    }
+    return instance;
+  },
+  TTSService
+};

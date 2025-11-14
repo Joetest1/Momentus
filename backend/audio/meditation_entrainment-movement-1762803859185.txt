@@ -1,0 +1,51 @@
+MOCK AUDIO FILE - DEVELOPMENT MODE
+Generated: 2025-11-10T19:44:19.185Z
+Session: entrainment-movement-1762803859185
+Text Length: 3207 characters
+Estimated Duration: 258 seconds (4 minutes)
+Voice: en-GB-RyanNeural (British Documentary Style)
+
+AUDIO EXPERIENCE:
+The WAV file contains 258 seconds of silence as a placeholder.
+In production with Azure TTS, this would be a full spoken meditation
+with natural British male voice, documentary-style pacing, and proper
+meditation pauses and breathing spaces.
+
+MEDITATION CONTENT THAT WOULD BE SPOKEN:
+Here is a 5-minute guided meditation script focused on natural entrainment and synchronization patterns, specifically movement rhythms:
+
+OPENING (1-2 minutes)
+Begin by settling into a comfortable position. Allow your eyes to gently close or keep a soft gaze. Take a few deep, nourishing breaths, feeling the movement of air and the rise and fall of your belly. 
+
+As you settle into this moment, imagine yourself as part of a great flock of birds, all moving in perfect synchrony. Notice how each bird effortlessly matches the speed and direction of its neighbors, the whole flock shifting and turning as a single, fluid entity. This is the power of entrainment - how individual elements spontaneously synchronize through local interactions and feedback.
+
+Just as the birds are attuned to the movements of those around them, become aware of the natural rhythms pulsing through your own body. Your breath, your heartbeat, the gentle sway of your body - all dancing to an innate, interconnected beat.
+
+CORE PRACTICE (2 minutes)
+Now, bring your attention to your breath. Feel it moving in and out, each inhalation and exhalation a wave of motion. Imagine that with each breath, you are joining the synchronized dance of the bird flock. 
+
+As you inhale, the flock surges forward in unison. As you exhale, the birds gracefully bank and turn as one. Match the flow of your breath to their collective movements - breathe in time with the forward thrust, breathe out as they curve and change direction.
+
+Notice how the movements of the flock and the movements of your breath begin to entrain, to synchronize. You are part of this dance, this flow of coordinated motion. Each inhale, each exhale, weaving you into the greater whole.
+
+DEEPENING (1 minute)
+Expand your awareness to include not just your own breath, but the subtle shifts and adjustments happening throughout the flock. Observe how the birds continuously sense and respond to their neighbors, aligning their velocities and directions through local interactions.
+
+This is the essence of collective motion dynamics - how simple rules of interaction give rise to complex, organized patterns. The birds are not following a central command, but rather attuning to the movements of those around them, a self-organizing intelligence emerging from their mutual entrainment.
+
+Feel this principle pulsing within you as well, your breath and body movements entrained with the greater rhythms of the natural world.
+
+INTEGRATION (1 minute)
+As we conclude this meditation, allow the awareness of synchronized movement to permeate your entire being. Know that you are part of a vast web of natural oscillations and feedback loops, from the largest flocks and herds to the tiniest cellular processes.
+
+Your breath, your steps, your gestures - all expressions of this universal dance of entrainment. Carry this sense of connection and flow with you as you move through the rest of your day, attuned to the rhythms that unite all of life.
+
+CLOSING
+Gently open your eyes, feeling grounded, centered, and in harmony with the pulsing vitality of the natural world. Let this meditation be a reminder that you are an integral, synchronizing part of the great movement of life.
+
+[TO ENABLE REAL TTS AUDIO:
+1. Get Azure Cognitive Services TTS API key from Microsoft Azure
+2. Add AZURE_TTS_API_KEY=your_key to .env file
+3. Add AZURE_TTS_REGION=eastus to .env file  
+4. Restart server
+5. The same meditation will then generate with full voice narration]

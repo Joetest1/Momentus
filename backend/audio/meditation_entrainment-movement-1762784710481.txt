@@ -1,0 +1,45 @@
+MOCK AUDIO FILE
+Generated: 2025-11-10T14:25:10.481Z
+Session: entrainment-movement-1762784710481
+Text Length: 4110 characters
+Voice: en-GB-RyanNeural (British Documentary Style)
+
+MEDITATION CONTENT:
+Here is a 10-minute guided meditation focused on natural entrainment and synchronization patterns, specifically: MOVEMENT RHYTHMS.
+
+OPENING (2 minutes)
+Begin by finding a comfortable seated position, allowing your body to relax and settle. Take a few deep breaths, feeling the air moving in and out. Notice the natural rhythm of your breath, how it ebbs and flows. 
+
+As you continue breathing, become aware of the subtle movements within your body - the rise and fall of your chest, the gentle sway of your torso, the shifting of weight from one side to the other. These are the rhythms that keep you balanced and alive. 
+
+Now, imagine yourself as part of a flock of birds, each one attuned to the movements of their neighbors. Like the birds, your body is part of an interconnected whole, moving in harmony through the currents of air and space. Your individual motions are synchronized with the larger pattern.
+
+CORE PRACTICE (7 minutes)
+Picture the flock in your mind's eye - hundreds of birds, wings flapping in perfect unison, shifting and turning as one fluid entity. Observe how they are able to maintain cohesion through local rules of interaction. Each bird follows the simple instructions of aligning its velocity with nearby neighbors and adjusting its direction accordingly. 
+
+Yet from these simple behaviors, a magnificent, coordinated display emerges. The flock moves with a single intentionality, twisting and banking as if guided by an invisible force. This is the power of natural entrainment - how individual elements, when coupled together, synchronize their movements through feedback loops.
+
+As you witness this dance of the birds, begin to match your own breath to their rhythmic flapping. Breathe in as their wings rise, exhale as they descend. Feel your body entrain to their collective motion, becoming part of the flowing, pulsing whole.
+
+Now expand your awareness to include the entire landscape. Sense the way the flock moves as one organism, navigating the currents of wind and weather. Notice how the birds maintain their cohesion, even as the flock changes direction or velocity. This is the magic of swarming intelligence - no single bird is in charge, yet the system self-organizes through local interactions.
+
+Tune in to the kinesthetic sensations in your own body. Feel how your limbs and torso respond to the imagined movements of the flock. Where do you feel a sense of flow and ease? Where do you encounter resistance or rigidity? Breathe into any areas of tension, allowing them to soften and synchronize.
+
+DEEPENING (1 minute)
+As you continue coordinating your breath and movement with the flock, consider the deeper principles at play. This is a profound example of how complex systems - whether flocks, schools, or swarms - can arise from simple rules of interaction. The birds are not following a master plan, but rather, responding to their neighbors in the moment.
+
+Likewise, the rhythms within your own body emerge from myriad feedback loops - your heart, lungs, and muscles all communicating to maintain balance and coherence. And on the grandest scale, the entire planet is a symphony of synchronized cycles, from ocean tides to seasonal patterns.
+
+INTEGRATION (1 minute)
+As this meditation comes to a close, allow your awareness to expand even further. Sense the ways in which your own movements and rhythms are interwoven with the larger patterns of nature. Your breath, your steps, your heartbeat - all part of the great dance of life, pulsing with the same universal synchronization.
+
+Carry this felt sense of interconnection with you as you move through the rest of your day. Let it inform your choices, your relationships, and your engagement with the world. For you are not separate, but an integral node in the magnificent web of natural entrainment.
+
+CLOSING (1 minute)
+When you are ready, slowly open your eyes and return your focus to the room around you. Feel the ground beneath you, the air moving across your skin. Know that the rhythms you have cultivated in this meditation are always available to you, waiting to attune you to the greater whole.
+
+[This is a development placeholder. To enable real TTS audio:
+1. Get Azure Cognitive Services TTS API key
+2. Add AZURE_TTS_API_KEY=your_key to .env
+3. Add AZURE_TTS_REGION=eastus to .env
+4. Restart server]

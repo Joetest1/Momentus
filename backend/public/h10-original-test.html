@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>H10 Original Page Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 8px; }
+        button { padding: 10px 15px; margin: 5px; background: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; }
+        #log { background: #f8f9fa; padding: 10px; margin: 10px 0; border-radius: 4px; font-family: monospace; height: 300px; overflow-y: auto; border: 1px solid #ddd; }
+        .success { color: green; font-weight: bold; }
+        .error { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <h1>🔍 H10 Original Page Analysis</h1>
+
+    <div class="test">
+        <h3>Current Storage Status</h3>
+        <button onclick="checkStorage()">📊 Check Storage</button>
+        <button onclick="clearStorage()">🧹 Clear Storage</button>
+        <button onclick="addTestParticipant()">➕ Add Test Participant</button>
+        <button onclick="openOriginalAndCheck()">🔗 Open Original & Check</button>
+    </div>
+
+    <div class="test">
+        <h3>Debug Log</h3>
+        <div id="log"></div>
+    </div>
+
+    <script>
+        function log(message, type = 'normal') {
+            console.log(message);
+            const logDiv = document.getElementById('log');
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type === 'success' ? 'success' : type === 'error' ? 'error' : '';
+            logDiv.innerHTML += `<span class="${className}">${timestamp}: ${message}</span><br>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function checkStorage() {
+            log('📊 Checking current storage status...');
+            
+            // Check participants
+            const participantsData = localStorage.getItem('h10_participants');
+            if (participantsData) {
+                try {
+                    const participants = JSON.parse(participantsData);
+                    log(`✅ Found ${participants.length} participants in storage:`, 'success');
+                    participants.forEach((p, index) => {
+                        log(`  ${index + 1}. ${p.name} (${p.id}) - ${p.deviceId}`);
+                    });
+                } catch (e) {
+                    log('❌ Error parsing participants data: ' + e.message, 'error');
+                }
+            } else {
+                log('📝 No participants found in storage');
+            }
+
+            // Check sessions
+            const sessionsData = localStorage.getItem('h10_sessions');
+            if (sessionsData) {
+                try {
+                    const sessions = JSON.parse(sessionsData);
+                    log(`✅ Found ${sessions.length} sessions in storage`, 'success');
+                } catch (e) {
+                    log('❌ Error parsing sessions data: ' + e.message, 'error');
+                }
+            } else {
+                log('📝 No sessions found in storage');
+            }
+        }
+
+        function clearStorage() {
+            localStorage.removeItem('h10_participants');
+            localStorage.removeItem('h10_sessions');
+            log('🧹 Cleared all H10 storage', 'success');
+        }
+
+        function addTestParticipant() {
+            log('➕ Adding test participant directly to storage...');
+            
+            const testParticipant = {
+                id: 'NEW',
+                name: 'New Test User',
+                deviceId: 'Polar H10 87654321',
+                email: 'newtest@example.com',
+                notes: 'Added via direct storage test',
+                addedAt: new Date().toISOString(),
+                lastSeen: null,
+                connected: false,
+                totalSessions: 0,
+                lastSessionDate: null
+            };
+
+            // Get existing participants
+            let participants = [];
+            const existing = localStorage.getItem('h10_participants');
+            if (existing) {
+                participants = JSON.parse(existing);
+            }
+
+            // Remove any existing 'NEW' participant
+            participants = participants.filter(p => p.id !== 'NEW');
+            
+            // Add new participant
+            participants.push(testParticipant);
+            
+            // Save back to storage
+            localStorage.setItem('h10_participants', JSON.stringify(participants));
+            
+            log(`✅ Added participant: ${testParticipant.name} (${testParticipant.id})`, 'success');
+            log('💾 Saved to localStorage - total participants: ' + participants.length);
+            
+            // Verify
+            checkStorage();
+        }
+
+        function openOriginalAndCheck() {
+            log('🔗 Opening original H10 management page...');
+            log('📝 Instructions:');
+            log('1. Check if "New Test User (NEW)" appears in Registered Participants');
+            log('2. Try adding a new participant with ID "ABC"');
+            log('3. Come back here and run "Check Storage" to see if it was saved');
+            
+            // Open the original page
+            window.open('/h10-management.html', '_blank', 'width=1200,height=800');
+            
+            log('✅ Original page opened in new window');
+        }
+
+        // Auto-check storage on load
+        document.addEventListener('DOMContentLoaded', function() {
+            log('🚀 H10 Original Page Test loaded');
+            setTimeout(checkStorage, 500);
+        });
+    </script>
+</body>
+</html>

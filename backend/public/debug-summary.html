@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>H10 Debug Summary</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { border: 1px solid #ccc; padding: 20px; margin: 20px 0; border-radius: 8px; }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        .warning { background: #fff3cd; border-color: #ffeaa7; }
+        button { padding: 10px 20px; margin: 5px; }
+        #output { font-family: monospace; white-space: pre-wrap; background: #f8f9fa; padding: 10px; border-radius: 4px; }
+    </style>
+</head>
+<body>
+    <h1>🔍 H10 System Debug Summary</h1>
+    
+    <div class="section">
+        <h2>1. Server Status</h2>
+        <button onclick="testServer()">Test Server Connection</button>
+        <div id="server-status"></div>
+    </div>
+    
+    <div class="section">
+        <h2>2. Participant Storage Test</h2>
+        <button onclick="testParticipantStorage()">Test Add Participant</button>
+        <button onclick="viewStorage()">View localStorage</button>
+        <button onclick="clearStorage()">Clear Storage</button>
+        <div id="storage-status"></div>
+    </div>
+    
+    <div class="section">
+        <h2>3. Meditation Generation Test</h2>
+        <button onclick="testMeditation()">Test Meditation API</button>
+        <div id="meditation-status"></div>
+    </div>
+    
+    <div class="section">
+        <h2>4. Debug Output</h2>
+        <div id="output"></div>
+    </div>
+
+    <script>
+        function log(message) {
+            const output = document.getElementById('output');
+            output.textContent += new Date().toLocaleTimeString() + ': ' + message + '\n';
+        }
+
+        function testServer() {
+            log('Testing server connection...');
+            fetch('/admin.html')
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('server-status').innerHTML = '<div class="success">✅ Server is running</div>';
+                        log('Server connection: SUCCESS');
+                    } else {
+                        document.getElementById('server-status').innerHTML = '<div class="error">❌ Server error: ' + response.status + '</div>';
+                        log('Server connection: ERROR ' + response.status);
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('server-status').innerHTML = '<div class="error">❌ Server not accessible: ' + error.message + '</div>';
+                    log('Server connection: FAILED - ' + error.message);
+                });
+        }
+
+        function testParticipantStorage() {
+            log('Testing participant storage...');
+            
+            // Clear existing data for clean test
+            localStorage.removeItem('h10_participants');
+            
+            // Add test participant
+            const testParticipant = {
+                id: 'TST',
+                name: 'Test User',
+                deviceId: 'test-device-123',
+                addedAt: new Date().toISOString()
+            };
+            
+            const participants = [testParticipant];
+            localStorage.setItem('h10_participants', JSON.stringify(participants));
+            
+            // Verify storage
+            const stored = localStorage.getItem('h10_participants');
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                if (parsed.length === 1 && parsed[0].id === 'TST') {
+                    document.getElementById('storage-status').innerHTML = '<div class="success">✅ Participant storage working</div>';
+                    log('Participant storage: SUCCESS');
+                } else {
+                    document.getElementById('storage-status').innerHTML = '<div class="error">❌ Data corruption in storage</div>';
+                    log('Participant storage: DATA CORRUPTION');
+                }
+            } else {
+                document.getElementById('storage-status').innerHTML = '<div class="error">❌ Storage failed</div>';
+                log('Participant storage: FAILED');
+            }
+        }
+
+        function viewStorage() {
+            log('Viewing localStorage contents...');
+            const participants = localStorage.getItem('h10_participants');
+            if (participants) {
+                const parsed = JSON.parse(participants);
+                document.getElementById('storage-status').innerHTML = 
+                    '<div class="warning">📝 Found ' + parsed.length + ' participants: ' + 
+                    parsed.map(p => p.name + ' (' + p.id + ')').join(', ') + '</div>';
+                log('Storage contents: ' + participants);
+            } else {
+                document.getElementById('storage-status').innerHTML = '<div class="warning">📝 No participants in storage</div>';
+                log('Storage contents: EMPTY');
+            }
+        }
+
+        function clearStorage() {
+            localStorage.removeItem('h10_participants');
+            localStorage.removeItem('h10_sessions');
+            document.getElementById('storage-status').innerHTML = '<div class="warning">🧹 Storage cleared</div>';
+            log('Storage cleared');
+        }
+
+        function testMeditation() {
+            log('Testing meditation generation API...');
+            
+            const testData = {
+                theme: 'acoustic',
+                duration: 300,
+                intensity: 'moderate'
+            };
+            
+            fetch('/api/admin/generate-entrainment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(testData)
+            })
+            .then(response => {
+                log('Meditation API response status: ' + response.status);
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('meditation-status').innerHTML = '<div class="success">✅ Meditation generation working</div>';
+                    log('Meditation API: SUCCESS - ' + data.meditation.substring(0, 100) + '...');
+                } else {
+                    document.getElementById('meditation-status').innerHTML = '<div class="error">❌ Meditation API error: ' + (data.error || 'Unknown error') + '</div>';
+                    log('Meditation API: ERROR - ' + (data.error || 'Unknown error'));
+                }
+            })
+            .catch(error => {
+                document.getElementById('meditation-status').innerHTML = '<div class="error">❌ Meditation API failed: ' + error.message + '</div>';
+                log('Meditation API: FAILED - ' + error.message);
+            });
+        }
+
+        // Auto-run tests on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            log('Debug page loaded');
+            setTimeout(() => {
+                testServer();
+                viewStorage();
+            }, 500);
+        });
+    </script>
+</body>
+</html>

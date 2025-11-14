@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H10 Browser Compatibility Guide</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        .browser-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .browser-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s;
+        }
+        .browser-card.supported {
+            background: #c6f6d5;
+            border-color: #48bb78;
+        }
+        .browser-card.not-supported {
+            background: #fed7d7;
+            border-color: #f56565;
+        }
+        .browser-icon {
+            font-size: 48px;
+            margin-bottom: 10px;
+        }
+        .step-list {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin: 15px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 6px;
+            border-left: 4px solid #667eea;
+        }
+        .step-number {
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+            flex-shrink: 0;
+        }
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+            text-decoration: none;
+            display: inline-block;
+        }
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+        .btn-success {
+            background: #48bb78;
+            color: white;
+        }
+        .btn-success:hover {
+            background: #38a169;
+        }
+        .highlight {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+        .code {
+            background: #f1f5f9;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navigation Bar -->
+        <div style="background: rgba(255, 255, 255, 0.1); border-radius: 10px; padding: 15px; margin-bottom: 20px; backdrop-filter: blur(10px);">
+            <div style="display: flex; align-items: center; justify-content: space-between;">
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <a href="/" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.2); border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">
+                        🏠 Momentus Home
+                    </a>
+                    <a href="/h10-simple-management.html" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                        👥 Manage Participants
+                    </a>
+                    <a href="/h10-biometric-dashboard.html" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                        📊 Biometric Analysis
+                    </a>
+                    <a href="/admin.html" style="color: white; text-decoration: none; padding: 8px 16px; background: rgba(255,255,255,0.1); border-radius: 6px; display: flex; align-items: center; gap: 8px; transition: all 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.2)'" onmouseout="this.style.background='rgba(255,255,255,0.1)'">
+                        ⚙️ Admin
+                    </a>
+                </div>
+                <div style="color: rgba(255,255,255,0.8); font-size: 14px;">
+                    Browser Compatibility Guide
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h1 style="text-align: center; color: #2d3748; margin-bottom: 10px;">
+                🫀 H10 Browser Compatibility Guide
+            </h1>
+            <p style="text-align: center; color: #718096; font-size: 18px;">
+                Web Bluetooth support for Polar H10 heart rate monitoring
+            </p>
+        </div>
+
+        <div class="card">
+            <h2>🌐 Browser Support Status</h2>
+            <div class="browser-grid">
+                <div class="browser-card supported">
+                    <div class="browser-icon">🟢</div>
+                    <h3>Google Chrome</h3>
+                    <p><strong>✅ Full Support</strong></p>
+                    <p>Recommended browser for H10 testing</p>
+                </div>
+                <div class="browser-card supported">
+                    <div class="browser-icon">🔵</div>
+                    <h3>Microsoft Edge</h3>
+                    <p><strong>✅ Full Support</strong></p>
+                    <p>Works well with Web Bluetooth</p>
+                </div>
+                <div class="browser-card supported">
+                    <div class="browser-icon">🔴</div>
+                    <h3>Opera</h3>
+                    <p><strong>✅ Full Support</strong></p>
+                    <p>Good alternative option</p>
+                </div>
+                <div class="browser-card not-supported">
+                    <div class="browser-icon">🚫</div>
+                    <h3>Safari</h3>
+                    <p><strong>❌ Not Supported</strong></p>
+                    <p>Apple hasn't implemented Web Bluetooth yet</p>
+                </div>
+                <div class="browser-card not-supported">
+                    <div class="browser-icon">🦊</div>
+                    <h3>Firefox</h3>
+                    <p><strong>❌ Limited Support</strong></p>
+                    <p>Experimental flag required</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🚀 Quick Setup Guide</h2>
+            
+            <div class="highlight">
+                <strong>📍 Current Status:</strong> You're using Safari, which doesn't support Web Bluetooth. 
+                To test H10 functionality, you'll need to use Chrome, Edge, or Opera.
+            </div>
+
+            <div class="step-list">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <strong>Download Chrome or Edge</strong><br>
+                        <small>Both browsers have excellent Web Bluetooth support</small><br>
+                        <a href="https://www.google.com/chrome/" target="_blank" class="btn btn-primary" style="margin-top: 8px;">Download Chrome</a>
+                        <a href="https://www.microsoft.com/edge/" target="_blank" class="btn btn-primary" style="margin-top: 8px;">Download Edge</a>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <strong>Open the H10 management page in the new browser</strong><br>
+                        <small>Copy this URL to Chrome/Edge:</small><br>
+                        <div class="code" style="margin-top: 8px;">http://localhost:3000/h10-simple-management.html</div>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <strong>Enable Bluetooth permissions</strong><br>
+                        <small>The browser will ask for Bluetooth access when you scan for devices</small>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div>
+                        <strong>Prepare your H10</strong><br>
+                        <small>Make sure it's charged, turned on, and not connected to other apps</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🧪 Testing Alternatives</h2>
+            
+            <h3>Option A: Use Chrome/Edge (Recommended)</h3>
+            <p>This gives you full H10 functionality including:</p>
+            <ul>
+                <li>✅ Device scanning and discovery</li>
+                <li>✅ Real-time heart rate monitoring</li>
+                <li>✅ Connection testing</li>
+                <li>✅ Session management</li>
+            </ul>
+
+            <h3>Option B: Simulation Mode</h3>
+            <p>I can create a simulation mode that works in Safari for development/testing:</p>
+            <ul>
+                <li>✅ Simulated heart rate data</li>
+                <li>✅ Mock device connections</li>
+                <li>✅ UI testing without real H10</li>
+                <li>❌ No real Bluetooth functionality</li>
+            </ul>
+
+            <button class="btn btn-success" onclick="createSimulationMode()">Create Simulation Mode</button>
+        </div>
+
+        <div class="card">
+            <h2>🔧 Troubleshooting</h2>
+            
+            <h3>If Chrome/Edge still doesn't work:</h3>
+            <div class="step-list">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <strong>Check HTTPS requirement</strong><br>
+                        <small>Web Bluetooth requires HTTPS, but localhost should work</small>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <strong>Enable Bluetooth flags (if needed)</strong><br>
+                        <small>Go to <span class="code">chrome://flags/</span> and search for "bluetooth"</small>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <strong>Check system Bluetooth</strong><br>
+                        <small>Make sure your Mac's Bluetooth is enabled in System Preferences</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>📱 H10 Device Preparation</h2>
+            
+            <div class="step-list">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div>
+                        <strong>Turn on your H10</strong><br>
+                        <small>Press and hold the button (if your model has one) or put on the chest strap</small>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div>
+                        <strong>Check LED status</strong><br>
+                        <small>Should show a slow blue blink when ready to pair</small>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div>
+                        <strong>Disconnect from other apps</strong><br>
+                        <small>Close Polar Beat, Polar Flow, or other apps using the H10</small>
+                    </div>
+                </div>
+
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div>
+                        <strong>Position near computer</strong><br>
+                        <small>Keep H10 within 3 feet of your Mac for testing</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function createSimulationMode() {
+            if (confirm('Create a Safari-compatible simulation mode?\n\nThis will create a version that simulates H10 functionality without requiring Web Bluetooth.')) {
+                // This would trigger creation of simulation mode
+                alert('Simulation mode would be created here!\n\nFor now, I recommend trying Chrome or Edge for full functionality.');
+            }
+        }
+
+        // Detect current browser
+        function detectBrowser() {
+            const userAgent = navigator.userAgent;
+            let browserName = "Unknown";
+            
+            if (userAgent.includes("Chrome") && !userAgent.includes("Edg")) {
+                browserName = "Chrome";
+            } else if (userAgent.includes("Edg")) {
+                browserName = "Edge";
+            } else if (userAgent.includes("Safari") && !userAgent.includes("Chrome")) {
+                browserName = "Safari";
+            } else if (userAgent.includes("Firefox")) {
+                browserName = "Firefox";
+            } else if (userAgent.includes("Opera")) {
+                browserName = "Opera";
+            }
+            
+            return browserName;
+        }
+
+        // Show current browser status
+        document.addEventListener('DOMContentLoaded', function() {
+            const browser = detectBrowser();
+            const hasWebBluetooth = navigator.bluetooth !== undefined;
+            
+            // Add status indicator
+            const statusDiv = document.createElement('div');
+            statusDiv.style.cssText = 'position: fixed; top: 20px; right: 20px; background: ' + 
+                (hasWebBluetooth ? '#48bb78' : '#f56565') + 
+                '; color: white; padding: 10px 20px; border-radius: 20px; font-weight: bold; z-index: 1000;';
+            statusDiv.textContent = `${browser} - ${hasWebBluetooth ? 'Web Bluetooth ✅' : 'No Web Bluetooth ❌'}`;
+            document.body.appendChild(statusDiv);
+        });
+    </script>
+</body>
+</html>
